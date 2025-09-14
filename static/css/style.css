@@ -509,6 +509,16 @@ body {
     z-index: 10000 !important;
 }
 
+/* 모달 내 모든 요소가 클릭 가능하도록 */
+.modal * {
+    pointer-events: auto !important;
+}
+
+.modal .btn {
+    cursor: pointer !important;
+    pointer-events: auto !important;
+}
+
 .completion-stats .stat-box {
     padding: 1rem;
     background: #f8f9fa;
@@ -538,6 +548,8 @@ body {
 /* 모달이 열렸을 때 게임 컨테이너 비활성화 */
 .game-container.modal-open {
     pointer-events: none;
+    filter: blur(1px);
+    opacity: 0.7;
 }
 
 .modal.show {
