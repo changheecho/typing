@@ -322,19 +322,47 @@ class TypingGame {
         // 서버에 결과 전송
         this.saveProgress();
         
-        // 완료 모달 표시
-        const modal = new bootstrap.Modal(document.getElementById('gameCompleteModal'));
-        modal.show();
+        // 다음 단계 버튼 이벤트 제거 (중복 방지)
+        const nextStageBtn = document.getElementById('nextStageBtn');
+        const newNextStageBtn = nextStageBtn.cloneNode(true);
+        nextStageBtn.parentNode.replaceChild(newNextStageBtn, nextStageBtn);
         
         // 다음 단계 버튼 처리
-        document.getElementById('nextStageBtn').onclick = () => {
+        newNextStageBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            
             const nextStage = this.config.stage + 1;
             if (nextStage <= 20) {
                 window.location.href = `/game/${nextStage}`;
             } else {
                 window.location.href = '/dashboard';
             }
-        };
+        });
+        
+        // 완료 모달 표시
+        const modalElement = document.getElementById('gameCompleteModal');
+        const modal = new bootstrap.Modal(modalElement, {
+            backdrop: 'static',
+            keyboard: false
+        });
+        
+        // 모달이 표시될 때 게임 컨테이너 비활성화
+        modalElement.addEventListener('show.bs.modal', () => {
+            document.querySelector('.game-container').classList.add('modal-open');
+        }, { once: true });
+        
+        // 모달이 완전히 표시된 후 포커스 설정
+        modalElement.addEventListener('shown.bs.modal', () => {
+            newNextStageBtn.focus();
+        }, { once: true });
+        
+        // 모달이 닫힐 때 게임 컨테이너 활성화
+        modalElement.addEventListener('hidden.bs.modal', () => {
+            document.querySelector('.game-container').classList.remove('modal-open');
+        }, { once: true });
+        
+        modal.show();
         
         // 진행상황 추적
         trackUserProgress(this.config.stage, this.score, accuracy);
@@ -352,7 +380,22 @@ class TypingGame {
         document.getElementById('gameOverAccuracy').textContent = accuracy.toFixed(1) + '%';
         
         // 게임 오버 모달 표시
-        const modal = new bootstrap.Modal(document.getElementById('gameOverModal'));
+        const modalElement = document.getElementById('gameOverModal');
+        const modal = new bootstrap.Modal(modalElement, {
+            backdrop: 'static',
+            keyboard: false
+        });
+        
+        // 모달이 표시될 때 게임 컨테이너 비활성화
+        modalElement.addEventListener('show.bs.modal', () => {
+            document.querySelector('.game-container').classList.add('modal-open');
+        }, { once: true });
+        
+        // 모달이 닫힐 때 게임 컨테이너 활성화
+        modalElement.addEventListener('hidden.bs.modal', () => {
+            document.querySelector('.game-container').classList.remove('modal-open');
+        }, { once: true });
+        
         modal.show();
     }
     
