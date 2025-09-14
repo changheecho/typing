@@ -94,6 +94,11 @@ body {
     z-index: 1;
 }
 
+/* 모달이 열렸을 때 게임 컨테이너를 더 낮은 z-index로 */
+.game-container.modal-open {
+    z-index: -1 !important;
+}
+
 .game-header {
     position: relative;
     z-index: 100;
@@ -496,17 +501,31 @@ body {
     color: #dc3545;
 }
 
-/* 모달 스타일 */
+/* 모달 스타일 - 최우선 z-index 설정 */
 .modal {
-    z-index: 9999 !important;
+    z-index: 99999 !important;
+    position: fixed !important;
 }
 
 .modal-backdrop {
-    z-index: 9998 !important;
+    z-index: 99998 !important;
 }
 
 .modal-dialog {
-    z-index: 10000 !important;
+    z-index: 100000 !important;
+    position: relative !important;
+}
+
+.modal-content {
+    z-index: 100001 !important;
+    position: relative !important;
+}
+
+.modal-header,
+.modal-body,
+.modal-footer {
+    z-index: 100002 !important;
+    position: relative !important;
 }
 
 /* 모달 내 모든 요소가 클릭 가능하도록 */
@@ -517,6 +536,8 @@ body {
 .modal .btn {
     cursor: pointer !important;
     pointer-events: auto !important;
+    z-index: 100003 !important;
+    position: relative !important;
 }
 
 .completion-stats .stat-box {
@@ -547,9 +568,10 @@ body {
 
 /* 모달이 열렸을 때 게임 컨테이너 비활성화 */
 .game-container.modal-open {
-    pointer-events: none;
+    pointer-events: none !important;
     filter: blur(1px);
     opacity: 0.7;
+    z-index: -1 !important;
 }
 
 .modal.show {
@@ -561,6 +583,29 @@ body {
 .modal-content {
     position: relative;
     z-index: 10002 !important;
+}
+
+/* body에 modal-open 클래스가 있을 때 */
+body.modal-open {
+    overflow: hidden;
+}
+
+body.modal-open .game-container {
+    pointer-events: none !important;
+    z-index: -1 !important;
+}
+
+/* 모달이 표시될 때 확실한 우선순위 */
+.modal.show .modal-dialog {
+    z-index: 100000 !important;
+}
+
+.modal.show .modal-content {
+    z-index: 100001 !important;
+}
+
+.modal.show .btn {
+    z-index: 100002 !important;
 }
 
 /* 반응형 디자인 */

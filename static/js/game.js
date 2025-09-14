@@ -595,24 +595,43 @@ class TypingGame {
         // 서버에 결과 전송
         this.saveProgress();
         
+        // 게임 컨테이너와 body 즉시 비활성화
+        const gameContainer = document.querySelector('.game-container');
+        const body = document.body;
+        gameContainer.classList.add('modal-open');
+        body.classList.add('modal-open');
+        
         // 완료 모달 표시
         const modalElement = document.getElementById('gameCompleteModal');
+        
+        // 기존 모달 인스턴스 제거
+        const existingModal = bootstrap.Modal.getInstance(modalElement);
+        if (existingModal) {
+            existingModal.dispose();
+        }
+        
         const modal = new bootstrap.Modal(modalElement, {
-            backdrop: true,
-            keyboard: true
+            backdrop: 'static',
+            keyboard: false,
+            focus: true
         });
         
-        // 모달이 표시될 때 게임 컨테이너 비활성화
-        modalElement.addEventListener('show.bs.modal', () => {
-            document.querySelector('.game-container').classList.add('modal-open');
-        }, { once: true });
-        
-        // 모달이 닫힐 때 게임 컨테이너 활성화  
-        modalElement.addEventListener('hidden.bs.modal', () => {
-            document.querySelector('.game-container').classList.remove('modal-open');
-        }, { once: true });
-        
+        // 모달 표시
         modal.show();
+        
+        // 모달이 완전히 표시된 후 버튼에 포커스
+        modalElement.addEventListener('shown.bs.modal', () => {
+            const nextBtn = document.getElementById('nextStageBtn');
+            if (nextBtn) {
+                nextBtn.focus();
+            }
+        }, { once: true });
+        
+        // 모달이 닫힐 때 게임 컨테이너와 body 활성화  
+        modalElement.addEventListener('hidden.bs.modal', () => {
+            gameContainer.classList.remove('modal-open');
+            body.classList.remove('modal-open');
+        }, { once: true });
         
         // 진행상황 추적
         trackUserProgress(this.config.stage, this.score, accuracy);
@@ -632,24 +651,35 @@ class TypingGame {
         document.getElementById('gameOverScore').textContent = this.score;
         document.getElementById('gameOverAccuracy').textContent = accuracy.toFixed(1) + '%';
         
+        // 게임 컨테이너와 body 즉시 비활성화
+        const gameContainer = document.querySelector('.game-container');
+        const body = document.body;
+        gameContainer.classList.add('modal-open');
+        body.classList.add('modal-open');
+        
         // 게임 오버 모달 표시
         const modalElement = document.getElementById('gameOverModal');
+        
+        // 기존 모달 인스턴스 제거
+        const existingModal = bootstrap.Modal.getInstance(modalElement);
+        if (existingModal) {
+            existingModal.dispose();
+        }
+        
         const modal = new bootstrap.Modal(modalElement, {
-            backdrop: true,
-            keyboard: true
+            backdrop: 'static',
+            keyboard: false,
+            focus: true
         });
         
-        // 모달이 표시될 때 게임 컨테이너 비활성화
-        modalElement.addEventListener('show.bs.modal', () => {
-            document.querySelector('.game-container').classList.add('modal-open');
-        }, { once: true });
-        
-        // 모달이 닫힐 때 게임 컨테이너 활성화
-        modalElement.addEventListener('hidden.bs.modal', () => {
-            document.querySelector('.game-container').classList.remove('modal-open');
-        }, { once: true });
-        
+        // 모달 표시
         modal.show();
+        
+        // 모달이 닫힐 때 게임 컨테이너와 body 활성화
+        modalElement.addEventListener('hidden.bs.modal', () => {
+            gameContainer.classList.remove('modal-open');
+            body.classList.remove('modal-open');
+        }, { once: true });
     }
     
     async saveProgress() {
