@@ -80,18 +80,48 @@ STAGE_CONFIG = {
 # 단어/문장 데이터
 WORDS_DATA = {
     'single': [
+        # 기본 단어들
         'the', 'and', 'for', 'you', 'all', 'not', 'but', 'can', 'had', 'her',
         'was', 'one', 'our', 'out', 'day', 'get', 'has', 'him', 'his', 'how',
         'man', 'new', 'now', 'old', 'see', 'two', 'who', 'boy', 'did', 'its',
-        'let', 'put', 'say', 'she', 'too', 'use', 'way', 'may', 'come', 'call'
+        'let', 'put', 'say', 'she', 'too', 'use', 'way', 'may', 'come', 'call',
+        
+        # 추가된 다양한 단어들
+        'time', 'work', 'life', 'right', 'down', 'very', 'what', 'just', 'first',
+        'over', 'think', 'also', 'back', 'after', 'good', 'want', 'through', 'many',
+        'where', 'much', 'should', 'well', 'people', 'down', 'own', 'just', 'because',
+        'good', 'each', 'those', 'feel', 'seem', 'these', 'free', 'little', 'human',
+        'local', 'large', 'next', 'available', 'major', 'possible', 'big', 'able',
+        'economic', 'argue', 'far', 'successful', 'exactly', 'step', 'discuss', 'topic',
+        
+        # 흥미로운 단어들
+        'amazing', 'beautiful', 'creative', 'delicious', 'exciting', 'fantastic', 'gorgeous',
+        'happiness', 'incredible', 'joyful', 'kindness', 'laughter', 'magnificent', 'nature',
+        'optimistic', 'peaceful', 'quality', 'relaxing', 'sunshine', 'tremendous', 'unique',
+        'victory', 'wonderful', 'excellent', 'youth', 'zealous', 'adventure', 'brilliant',
+        'courage', 'dream', 'energy', 'freedom', 'growth', 'harmony', 'inspire', 'journey'
     ],
     'short': [
-        'hello world', 'good morning', 'how are you', 'nice to meet',
-        'thank you', 'see you later', 'have a day', 'what is this',
-        'where are you', 'when will you', 'why do you', 'how do you',
-        'can you help', 'I am fine', 'this is good', 'that was nice'
+        # 기본 짧은 구문들
+        'hello world', 'good morning', 'how are you', 'nice to meet', 'thank you',
+        'see you later', 'have a day', 'what is this', 'where are you', 'when will you',
+        'why do you', 'how do you', 'can you help', 'I am fine', 'this is good', 'that was nice',
+        
+        # 일상 대화
+        'how was work', 'see you soon', 'take care now', 'what time is it', 'where shall we go',
+        'let me think', 'that sounds great', 'I understand now', 'no problem at all', 'you are welcome',
+        'excuse me please', 'I beg your pardon', 'could you repeat', 'nice weather today', 'have fun tonight',
+        
+        # 감정 표현
+        'I feel happy', 'this is awesome', 'what a surprise', 'I am excited', 'that was funny',
+        'so proud of you', 'well done today', 'keep up the work', 'never give up', 'dream big always',
+        
+        # 학습/업무 관련
+        'let me check', 'good idea indeed', 'time to learn', 'work hard today', 'study well tonight',
+        'practice makes perfect', 'knowledge is power', 'creativity flows freely', 'innovation drives progress', 'teamwork builds success'
     ],
     'medium': [
+        # 기존 문장들
         'The quick brown fox jumps over the lazy dog',
         'Practice makes perfect in everything you do',
         'Learning to type fast requires daily practice',
@@ -99,20 +129,77 @@ WORDS_DATA = {
         'Communication skills are essential for success',
         'The internet connects people around the world',
         'Programming languages help solve complex problems',
-        'Education opens doors to many opportunities'
+        'Education opens doors to many opportunities',
+        
+        # 생활과 일상
+        'Coffee shops provide a cozy atmosphere for reading and relaxation',
+        'Regular exercise contributes significantly to maintaining good health and wellness',
+        'Cooking homemade meals brings families together around the dinner table',
+        'Reading books expands vocabulary and improves critical thinking skills dramatically',
+        'Gardening teaches patience while connecting us with the natural world',
+        'Music has the power to evoke emotions and create lasting memories',
+        'Travel broadens perspectives and introduces us to diverse cultures worldwide',
+        
+        # 기술과 혁신
+        'Smartphones have revolutionized the way we communicate and access information',
+        'Social media platforms connect billions of people across different continents',
+        'Renewable energy sources are becoming increasingly important for environmental sustainability',
+        'Virtual reality technology creates immersive experiences for entertainment and education',
+        'Machine learning algorithms can analyze vast amounts of data efficiently',
+        
+        # 자기계발과 성장
+        'Setting clear goals helps maintain focus and direction in life',
+        'Developing emotional intelligence improves relationships and career prospects significantly',
+        'Time management skills enable better work-life balance and increased productivity',
+        'Continuous learning keeps the mind sharp and adaptable to change',
+        'Building strong networks opens doors to new opportunities and collaborations'
     ],
     'long': [
+        # 기존 긴 문장들
         'In the heart of every great achievement lies a story of perseverance and dedication',
         'The advancement of artificial intelligence continues to reshape our understanding of technology',
         'Effective communication involves not just speaking clearly but also listening attentively',
         'The pursuit of knowledge requires patience, curiosity, and an open mind to new ideas',
-        'Success in any field demands continuous learning and adaptation to changing circumstances'
+        'Success in any field demands continuous learning and adaptation to changing circumstances',
+        
+        # 철학적이고 깊이 있는 문장들
+        'The greatest discoveries often emerge from the intersection of different fields of knowledge and expertise',
+        'Creativity flourishes when we embrace uncertainty and allow ourselves to explore unconventional paths',
+        'Building meaningful relationships requires genuine interest in others and the ability to empathize deeply',
+        'Environmental conservation demands collective action and individual responsibility from every global citizen',
+        'Innovation thrives in environments that encourage experimentation and learn from both success and failure',
+        
+        # 사회와 문화
+        'Cultural diversity enriches our understanding of human experience and promotes tolerance across communities',
+        'Digital transformation has fundamentally altered how businesses operate and customers interact with brands',
+        'Sustainable development balances economic growth with environmental protection and social equity considerations',
+        'Educational systems must evolve to prepare students for careers that may not yet exist',
+        'Leadership in the modern world requires adaptability, emotional intelligence, and ethical decision-making skills',
+        
+        # 과학과 미래
+        'Scientific research continues to unlock mysteries about the universe and our place within it',
+        'Climate change represents one of the most pressing challenges facing humanity in this century',
+        'Biotechnology advances offer promising solutions for treating previously incurable diseases and conditions',
+        'Space exploration expands our knowledge while inspiring future generations to pursue ambitious goals'
     ],
     'complex': [
+        # 기존 복잡한 문장들
         'Despite the complexity of modern technological systems, human creativity remains the driving force behind innovation',
         'The interdisciplinary approach to problem-solving often yields the most comprehensive and sustainable solutions',
         'Globalization has fundamentally transformed the way we conduct business, communicate, and share cultural experiences',
-        'The synthesis of theoretical knowledge and practical application forms the foundation of meaningful scientific progress'
+        'The synthesis of theoretical knowledge and practical application forms the foundation of meaningful scientific progress',
+        
+        # 매우 복잡하고 도전적인 문장들
+        'The convergence of artificial intelligence, quantum computing, and biotechnology promises to revolutionize industries while simultaneously raising profound ethical questions about privacy, autonomy, and human identity',
+        'Contemporary neuroscience research has revealed that neuroplasticity allows the brain to reorganize itself throughout life, challenging long-held assumptions about cognitive development and rehabilitation possibilities',
+        'The transition toward renewable energy infrastructure requires coordinated efforts among governments, private sector entities, and international organizations to overcome technical, economic, and political obstacles',
+        'Philosophical debates about consciousness, free will, and moral responsibility continue to evolve as cognitive science provides new insights into the mechanisms underlying human behavior and decision-making processes',
+        
+        # 학술적이고 전문적인 문장들
+        'Quantum mechanical principles demonstrate that observation fundamentally alters the behavior of subatomic particles, suggesting reality itself may be more fluid than classical physics previously indicated',
+        'Epidemiological studies require careful consideration of confounding variables, selection bias, and statistical power to draw valid conclusions about causal relationships between exposure and disease outcomes',
+        'Macroeconomic policy decisions involving fiscal and monetary instruments must balance competing objectives such as inflation control, employment maximization, and sustainable long-term economic growth',
+        'Postmodern literary criticism challenges traditional notions of authorial intent and textual meaning, emphasizing instead the role of reader interpretation and cultural context in creating significance'
     ]
 }
 
