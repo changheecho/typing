@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- 히어로 섹션 -->
+<section class="hero-section bg-gradient-primary text-white py-5">
+    <div class="container">
+        <div class="row align-items-center min-vh-75">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4">
+                    영어 타이핑을<br>
+                    <span class="text-warning">마스터</span>하세요
+                </h1>
+                <p class="lead mb-4">
+                    기초부터 고급까지 단계별 커리큘럼으로<br>
+                    체계적으로 타이핑 실력을 향상시킬 수 있습니다.
+                </p>
+                <div class="d-flex gap-3">
+                    <a href="{{ url_for('register') }}" class="btn btn-warning btn-lg px-4">
+                        <i class="fas fa-rocket me-2"></i>지금 시작하기
+                    </a>
+                    <a href="{{ url_for('login') }}" class="btn btn-outline-light btn-lg px-4">
+                        <i class="fas fa-sign-in-alt me-2"></i>로그인
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="text-center">
+                    <div class="keyboard-preview">
+                        <i class="fas fa-keyboard fa-10x text-warning opacity-75"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 특징 섹션 -->
+<section class="features-section py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center mb-5">
+                <h2 class="fw-bold">왜 타이핑 마스터를 선택해야 할까요?</h2>
+                <p class="text-muted">체계적이고 효과적인 타이핑 학습 시스템</p>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="feature-card text-center p-4 h-100">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-layer-group fa-3x text-primary"></i>
+                    </div>
+                    <h4>단계별 커리큘럼</h4>
+                    <p class="text-muted">
+                        기초 홈로우부터 고급 문장까지<br>
+                        체계적인 단계별 학습 시스템
+                    </p>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="feature-card text-center p-4 h-100">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-desktop fa-3x text-success"></i>
+                    </div>
+                    <h4>실시간 키보드 가이드</h4>
+                    <p class="text-muted">
+                        시각적 키보드 애니메이션으로<br>
+                        정확한 손가락 위치 학습
+                    </p>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="feature-card text-center p-4 h-100">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-chart-line fa-3x text-warning"></i>
+                    </div>
+                    <h4>상세한 통계</h4>
+                    <p class="text-muted">
+                        WPM, 정확도 등<br>
+                        상세한 타이핑 통계 제공
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 레벨 미리보기 섹션 -->
+<section class="levels-preview bg-light py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center mb-5">
+                <h2 class="fw-bold">학습 단계</h2>
+                <p class="text-muted">체계적인 5단계 커리큘럼</p>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-lg-2 col-md-4 col-6">
+                <div class="level-card text-center p-3">
+                    <div class="level-number">1</div>
+                    <h6>기본 키</h6>
+                    <small class="text-muted">홈로우 키 학습</small>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-4 col-6">
+                <div class="level-card text-center p-3">
+                    <div class="level-number">2</div>
+                    <h6>기본 단어</h6>
+                    <small class="text-muted">자주 쓰는 단어</small>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-4 col-6">
+                <div class="level-card text-center p-3">
+                    <div class="level-number">3</div>
+                    <h6>문장 연습</h6>
+                    <small class="text-muted">완전한 문장</small>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-4 col-6">
+                <div class="level-card text-center p-3">
+                    <div class="level-number">4</div>
+                    <h6>숫자/기호</h6>
+                    <small class="text-muted">특수문자 연습</small>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-4 col-6">
+                <div class="level-card text-center p-3">
+                    <div class="level-number">5</div>
+                    <h6>고급 연습</h6>
+                    <small class="text-muted">코딩 텍스트</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA 섹션 -->
+<section class="cta-section bg-primary text-white py-5">
+    <div class="container text-center">
+        <h2 class="mb-3">지금 바로 타이핑 연습을 시작하세요!</h2>
+        <p class="lead mb-4">무료로 가입하고 체계적인 타이핑 학습을 경험해보세요.</p>
+        <a href="{{ url_for('register') }}" class="btn btn-warning btn-lg px-5">
+            <i class="fas fa-user-plus me-2"></i>무료 회원가입
+        </a>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// 간단한 타이핑 애니메이션 효과
+document.addEventListener('DOMContentLoaded', function() {
+    const heroTitle = document.querySelector('.hero-section h1');
+    if (heroTitle) {
+        heroTitle.style.opacity = '0';
+        heroTitle.style.transform = 'translateY(30px)';
+        
+        setTimeout(() => {
+            heroTitle.style.transition = 'all 0.8s ease';
+            heroTitle.style.opacity = '1';
+            heroTitle.style.transform = 'translateY(0)';
+        }, 300);
+    }
+});
+</script>
+{% endblock %}

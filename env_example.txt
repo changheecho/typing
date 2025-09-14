@@ -1,0 +1,32 @@
+# Flask 설정
+FLASK_APP=app.py
+FLASK_ENV=production
+SECRET_KEY=your-super-secret-key-change-this-in-production
+
+# 데이터베이스 설정
+DATABASE_URL=sqlite:///data/typing_practice.db
+# PostgreSQL 사용 시:
+# DATABASE_URL=postgresql://username:password@localhost/typing_practice
+
+# 서버 설정
+HOST=0.0.0.0
+PORT=5000
+
+# 보안 설정
+WTF_CSRF_TIME_LIMIT=3600
+
+# 이메일 설정 (향후 확장용)
+# MAIL_SERVER=smtp.gmail.com
+# MAIL_PORT=587
+# MAIL_USE_TLS=True
+# MAIL_USERNAME=your-email@gmail.com
+# MAIL_PASSWORD=your-app-password
+
+# Redis 설정 (세션 관리용, 선택사항)
+# REDIS_URL=redis://localhost:6379/0
+
+# 로깅 레벨
+LOG_LEVEL=INFO
+
+# 개발 모드 설정
+DEBUG=False

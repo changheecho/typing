@@ -1,0 +1,694 @@
+{% extends "base.html" %}
+
+{% block title %}{{ lesson.title }} - 타이핑 마스터{% endblock %}
+
+{% block head %}
+<style>
+    .typing-area {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 1.2rem;
+        line-height: 1.8;
+        padding: 1.5rem;
+        border: 2px solid #e9ecef;
+        border-radius: 0.5rem;
+        background: #fff;
+        min-height: 150px;
+    }
+    
+    .char-correct {
+        background-color: #d1f2eb;
+        color: #00695c;
+    }
+    
+    .char-incorrect {
+        background-color: #fadbd8;
+        color: #c62828;
+    }
+    
+    .char-current {
+        background-color: #fff3cd;
+        animation: blink 1s infinite;
+    }
+    
+    @keyframes blink {
+        0%, 50% { opacity: 1; }
+        51%, 100% { opacity: 0.3; }
+    }
+    
+    .stats-display {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 1.1rem;
+        font-weight: 500;
+    }
+    
+    /* 키보드 스타일 */
+    .keyboard {
+        max-width: 800px;
+        margin: 0 auto;
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    .keyboard-row {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 8px;
+        gap: 4px;
+    }
+    
+    .key {
+        min-width: 40px;
+        height: 40px;
+        background: #ffffff;
+        border: 2px solid #dee2e6;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.1s ease;
+        cursor: pointer;
+        user-select: none;
+    }
+    
+    .key:hover {
+        background: #e9ecef;
+    }
+    
+    .key-active {
+        background: #ffc107 !important;
+        border-color: #ffb300 !important;
+        color: #000;
+        transform: translateY(1px);
+        box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+    }
+    
+    .key-correct {
+        background: #28a745 !important;
+        border-color: #1e7e34 !important;
+        color: white;
+    }
+    
+    .key-incorrect {
+        background: #dc3545 !important;
+        border-color: #c82333 !important;
+        color: white;
+    }
+    
+    .key-space {
+        min-width: 200px;
+    }
+    
+    .key-large {
+        min-width: 60px;
+    }
+    
+    .key-extra-large {
+        min-width: 80px;
+    }
+    
+    .hand-guide {
+        font-size: 12px;
+        margin-top: 4px;
+        opacity: 0.7;
+    }
+    
+    .typing-input {
+        opacity: 0;
+        position: absolute;
+        left: -9999px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- 레슨 헤더 -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h3 class="mb-1">{{ lesson.title }}</h3>
+                            <p class="mb-0 opacity-75">{{ lesson.description }}</p>
+                        </div>
+                        <div class="text-end">
+                            <div class="badge bg-warning text-dark p-2">
+                                <i class="fas fa-target me-1"></i>
+                                목표: {{ lesson.min_wpm }} WPM, {{ lesson.min_accuracy }}% 정확도
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 통계 표시 -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h4 class="stats-display text-primary mb-0" id="wpm-display">0</h4>
+                    <small class="text-muted">WPM</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h4 class="stats-display text-success mb-0" id="accuracy-display">100</h4>
+                    <small class="text-muted">정확도 (%)</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h4 class="stats-display text-info mb-0" id="time-display">00:00</h4>
+                    <small class="text-muted">시간</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h4 class="stats-display text-warning mb-0" id="progress-display">0</h4>
+                    <small class="text-muted">진행률 (%)</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 타이핑 영역 -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-keyboard me-2"></i>타이핑 연습
+                    </h5>
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-outline-primary btn-sm" onclick="startTyping()">
+                            <i class="fas fa-play me-1"></i>시작
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="resetTyping()">
+                            <i class="fas fa-redo me-1"></i>다시시작
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="typing-area" id="typing-text">
+                        {{ lesson.content }}
+                    </div>
+                    <input type="text" class="typing-input" id="typing-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 가상 키보드 -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-desktop me-2"></i>키보드 가이드
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="keyboard" id="virtual-keyboard">
+                        <!-- 첫 번째 줄 -->
+                        <div class="keyboard-row">
+                            <div class="key" data-key="`">~<br>`</div>
+                            <div class="key" data-key="1">!<br>1</div>
+                            <div class="key" data-key="2">@<br>2</div>
+                            <div class="key" data-key="3">#<br>3</div>
+                            <div class="key" data-key="4">$<br>4</div>
+                            <div class="key" data-key="5">%<br>5</div>
+                            <div class="key" data-key="6">^<br>6</div>
+                            <div class="key" data-key="7">&<br>7</div>
+                            <div class="key" data-key="8">*<br>8</div>
+                            <div class="key" data-key="9">(<br>9</div>
+                            <div class="key" data-key="0">)<br>0</div>
+                            <div class="key" data-key="-">_<br>-</div>
+                            <div class="key" data-key="=">+<br>=</div>
+                            <div class="key key-large" data-key="Backspace">Backspace</div>
+                        </div>
+                        
+                        <!-- 두 번째 줄 -->
+                        <div class="keyboard-row">
+                            <div class="key key-large" data-key="Tab">Tab</div>
+                            <div class="key" data-key="q">Q</div>
+                            <div class="key" data-key="w">W</div>
+                            <div class="key" data-key="e">E</div>
+                            <div class="key" data-key="r">R</div>
+                            <div class="key" data-key="t">T</div>
+                            <div class="key" data-key="y">Y</div>
+                            <div class="key" data-key="u">U</div>
+                            <div class="key" data-key="i">I</div>
+                            <div class="key" data-key="o">O</div>
+                            <div class="key" data-key="p">P</div>
+                            <div class="key" data-key="[">{<br>[</div>
+                            <div class="key" data-key="]">}<br>]</div>
+                            <div class="key key-large" data-key="\\">|<br>\</div>
+                        </div>
+                        
+                        <!-- 세 번째 줄 -->
+                        <div class="keyboard-row">
+                            <div class="key key-extra-large" data-key="CapsLock">Caps Lock</div>
+                            <div class="key" data-key="a">A<div class="hand-guide">왼새끼</div></div>
+                            <div class="key" data-key="s">S<div class="hand-guide">왼약지</div></div>
+                            <div class="key" data-key="d">D<div class="hand-guide">왼중지</div></div>
+                            <div class="key" data-key="f">F<div class="hand-guide">왼검지</div></div>
+                            <div class="key" data-key="g">G<div class="hand-guide">왼검지</div></div>
+                            <div class="key" data-key="h">H<div class="hand-guide">오검지</div></div>
+                            <div class="key" data-key="j">J<div class="hand-guide">오검지</div></div>
+                            <div class="key" data-key="k">K<div class="hand-guide">오중지</div></div>
+                            <div class="key" data-key="l">L<div class="hand-guide">오약지</div></div>
+                            <div class="key" data-key=";">:<br>;<div class="hand-guide">오새끼</div></div>
+                            <div class="key" data-key="'">"<br>'</div>
+                            <div class="key key-extra-large" data-key="Enter">Enter</div>
+                        </div>
+                        
+                        <!-- 네 번째 줄 -->
+                        <div class="keyboard-row">
+                            <div class="key key-extra-large" data-key="Shift">Shift</div>
+                            <div class="key" data-key="z">Z</div>
+                            <div class="key" data-key="x">X</div>
+                            <div class="key" data-key="c">C</div>
+                            <div class="key" data-key="v">V</div>
+                            <div class="key" data-key="b">B</div>
+                            <div class="key" data-key="n">N</div>
+                            <div class="key" data-key="m">M</div>
+                            <div class="key" data-key=","><</div>
+                            <div class="key" data-key=".">></div>
+                            <div class="key" data-key="/">?</div>
+                            <div class="key key-extra-large" data-key="Shift">Shift</div>
+                        </div>
+                        
+                        <!-- 다섯 번째 줄 -->
+                        <div class="keyboard-row">
+                            <div class="key key-large" data-key="Ctrl">Ctrl</div>
+                            <div class="key key-large" data-key="Alt">Alt</div>
+                            <div class="key key-space" data-key=" ">Space<div class="hand-guide">엄지</div></div>
+                            <div class="key key-large" data-key="Alt">Alt</div>
+                            <div class="key key-large" data-key="Ctrl">Ctrl</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 진행상황 -->
+    {% if progress %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-history me-2"></i>이전 기록
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <h6 class="text-muted">최고 WPM</h6>
+                                <h4 class="text-primary">{{ progress.best_wpm }}</h4>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <h6 class="text-muted">최고 정확도</h6>
+                                <h4 class="text-success">{{ progress.best_accuracy|round(1) }}%</h4>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <h6 class="text-muted">시도 횟수</h6>
+                                <h4 class="text-info">{{ progress.attempts }}</h4>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <h6 class="text-muted">상태</h6>
+                                <h4 class="{% if progress.completed %}text-success{% else %}text-warning{% endif %}">
+                                    {% if progress.completed %}완료{% else %}진행중{% endif %}
+                                </h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- 결과 모달 -->
+<div class="modal fade" id="resultModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">연습 결과</h5>
+            </div>
+            <div class="modal-body" id="modal-body">
+                <!-- 결과 내용이 여기에 표시됩니다 -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                <button type="button" class="btn btn-primary" onclick="resetTyping()">다시 연습</button>
+                <a href="{{ url_for('dashboard') }}" class="btn btn-success">대시보드로</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+class TypingPractice {
+    constructor() {
+        this.text = {{ lesson.content|tojson|safe }};
+        this.lessonId = {{ lesson.id }};
+        this.currentIndex = 0;
+        this.startTime = null;
+        this.endTime = null;
+        this.errors = 0;
+        this.isStarted = false;
+        this.isFinished = false;
+        
+        this.init();
+    }
+    
+    init() {
+        this.renderText();
+        this.setupEventListeners();
+        this.updateStats();
+    }
+    
+    renderText() {
+        const textContainer = document.getElementById('typing-text');
+        textContainer.innerHTML = '';
+        
+        for (let i = 0; i < this.text.length; i++) {
+            const span = document.createElement('span');
+            span.textContent = this.text[i];
+            span.setAttribute('data-index', i);
+            
+            if (i === this.currentIndex) {
+                span.classList.add('char-current');
+            }
+            
+            textContainer.appendChild(span);
+        }
+    }
+    
+    setupEventListeners() {
+        const input = document.getElementById('typing-input');
+        
+        // 입력 이벤트
+        input.addEventListener('input', (e) => {
+            if (!this.isStarted) {
+                this.start();
+            }
+            
+            this.handleInput(e.target.value);
+        });
+        
+        // 키보드 이벤트
+        document.addEventListener('keydown', (e) => {
+            if (!this.isStarted && e.key !== 'Tab' && e.key !== 'F5') {
+                this.start();
+                document.getElementById('typing-input').focus();
+            }
+            
+            this.highlightKey(e.key);
+        });
+        
+        document.addEventListener('keyup', (e) => {
+            this.unhighlightKey(e.key);
+        });
+        
+        // 클릭으로 포커스
+        document.addEventListener('click', () => {
+            if (this.isStarted && !this.isFinished) {
+                document.getElementById('typing-input').focus();
+            }
+        });
+    }
+    
+    start() {
+        this.isStarted = true;
+        this.startTime = Date.now();
+        this.updateStats();
+        
+        // 입력 필드에 포커스
+        document.getElementById('typing-input').focus();
+    }
+    
+    handleInput(inputValue) {
+        if (this.isFinished) return;
+        
+        const expectedText = this.text.substring(0, inputValue.length);
+        
+        // 현재 인덱스 업데이트
+        this.currentIndex = inputValue.length;
+        
+        // 텍스트 렌더링 업데이트
+        this.updateTextDisplay(inputValue);
+        
+        // 에러 계산
+        this.calculateErrors(inputValue);
+        
+        // 통계 업데이트
+        this.updateStats();
+        
+        // 완료 확인
+        if (inputValue === this.text) {
+            this.finish();
+        }
+        
+        // 다음 키 하이라이트
+        if (this.currentIndex < this.text.length) {
+            this.highlightNextKey(this.text[this.currentIndex]);
+        }
+    }
+    
+    updateTextDisplay(inputValue) {
+        const spans = document.querySelectorAll('#typing-text span');
+        
+        spans.forEach((span, index) => {
+            span.className = '';
+            
+            if (index < inputValue.length) {
+                if (inputValue[index] === this.text[index]) {
+                    span.classList.add('char-correct');
+                } else {
+                    span.classList.add('char-incorrect');
+                }
+            } else if (index === this.currentIndex) {
+                span.classList.add('char-current');
+            }
+        });
+    }
+    
+    calculateErrors(inputValue) {
+        this.errors = 0;
+        for (let i = 0; i < inputValue.length; i++) {
+            if (inputValue[i] !== this.text[i]) {
+                this.errors++;
+            }
+        }
+    }
+    
+    updateStats() {
+        const timeElapsed = this.isStarted ? (Date.now() - this.startTime) / 1000 : 0;
+        const wordsTyped = this.currentIndex / 5; // 평균 단어 길이 5자
+        const wpm = timeElapsed > 0 ? Math.round((wordsTyped * 60) / timeElapsed) : 0;
+        const accuracy = this.currentIndex > 0 ? Math.round(((this.currentIndex - this.errors) / this.currentIndex) * 100) : 100;
+        const progress = Math.round((this.currentIndex / this.text.length) * 100);
+        
+        document.getElementById('wpm-display').textContent = wpm;
+        document.getElementById('accuracy-display').textContent = accuracy;
+        document.getElementById('time-display').textContent = this.formatTime(timeElapsed);
+        document.getElementById('progress-display').textContent = progress;
+    }
+    
+    formatTime(seconds) {
+        const mins = Math.floor(seconds / 60);
+        const secs = Math.floor(seconds % 60);
+        return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+    
+    highlightKey(key) {
+        const keyElement = this.findKeyElement(key);
+        if (keyElement) {
+            keyElement.classList.add('key-active');
+        }
+    }
+    
+    unhighlightKey(key) {
+        const keyElement = this.findKeyElement(key);
+        if (keyElement) {
+            keyElement.classList.remove('key-active');
+        }
+    }
+    
+    highlightNextKey(nextChar) {
+        // 모든 키에서 하이라이트 제거
+        document.querySelectorAll('.key').forEach(key => {
+            key.classList.remove('key-active');
+        });
+        
+        // 다음 키 하이라이트
+        const keyElement = this.findKeyElement(nextChar);
+        if (keyElement) {
+            keyElement.classList.add('key-active');
+        }
+    }
+    
+    findKeyElement(key) {
+        const mappings = {
+            ' ': ' ',
+            'Enter': 'Enter',
+            'Backspace': 'Backspace',
+            'Tab': 'Tab',
+            'Shift': 'Shift',
+            'Control': 'Ctrl',
+            'Alt': 'Alt',
+            'CapsLock': 'CapsLock'
+        };
+        
+        const searchKey = mappings[key] || key.toLowerCase();
+        return document.querySelector(`[data-key="${searchKey}"]`);
+    }
+    
+    async finish() {
+        this.isFinished = true;
+        this.endTime = Date.now();
+        
+        const timeElapsed = (this.endTime - this.startTime) / 1000;
+        const wordsTyped = this.text.length / 5;
+        const wpm = Math.round((wordsTyped * 60) / timeElapsed);
+        const accuracy = Math.round(((this.text.length - this.errors) / this.text.length) * 100);
+        
+        // 결과 전송
+        await this.submitResult(wpm, accuracy, Math.round(timeElapsed));
+    }
+    
+    async submitResult(wpm, accuracy, timeElapsed) {
+        try {
+            const response = await fetch('/api/submit_result', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    lesson_id: this.lessonId,
+                    wpm: wpm,
+                    accuracy: accuracy,
+                    time_taken: timeElapsed
+                })
+            });
+            
+            const result = await response.json();
+            this.showResult(result, wpm, accuracy, timeElapsed);
+            
+        } catch (error) {
+            console.error('결과 전송 실패:', error);
+        }
+    }
+    
+    showResult(result, wpm, accuracy, timeElapsed) {
+        const modalBody = document.getElementById('modal-body');
+        const passed = result.passed;
+        
+        modalBody.innerHTML = `
+            <div class="text-center mb-4">
+                <i class="fas ${passed ? 'fa-trophy' : 'fa-redo'} fa-3x ${passed ? 'text-warning' : 'text-info'} mb-3"></i>
+                <h4 class="${passed ? 'text-success' : 'text-warning'}">${result.message}</h4>
+            </div>
+            
+            <div class="row text-center">
+                <div class="col-4">
+                    <h5 class="text-primary">${wpm}</h5>
+                    <small class="text-muted">WPM</small>
+                </div>
+                <div class="col-4">
+                    <h5 class="text-success">${accuracy}%</h5>
+                    <small class="text-muted">정확도</small>
+                </div>
+                <div class="col-4">
+                    <h5 class="text-info">${this.formatTime(timeElapsed)}</h5>
+                    <small class="text-muted">시간</small>
+                </div>
+            </div>
+            
+            <hr>
+            
+            <div class="row text-center">
+                <div class="col-6">
+                    <h6 class="text-muted">최고 WPM</h6>
+                    <h5 class="text-primary">${result.best_wpm}</h5>
+                </div>
+                <div class="col-6">
+                    <h6 class="text-muted">최고 정확도</h6>
+                    <h5 class="text-success">${result.best_accuracy.toFixed(1)}%</h5>
+                </div>
+            </div>
+        `;
+        
+        const modal = new bootstrap.Modal(document.getElementById('resultModal'));
+        modal.show();
+    }
+    
+    reset() {
+        this.currentIndex = 0;
+        this.startTime = null;
+        this.endTime = null;
+        this.errors = 0;
+        this.isStarted = false;
+        this.isFinished = false;
+        
+        document.getElementById('typing-input').value = '';
+        this.renderText();
+        this.updateStats();
+        
+        // 키보드 하이라이트 초기화
+        document.querySelectorAll('.key').forEach(key => {
+            key.classList.remove('key-active', 'key-correct', 'key-incorrect');
+        });
+    }
+}
+
+// 전역 변수
+let typingPractice;
+
+// 페이지 로드 시 초기화
+document.addEventListener('DOMContentLoaded', function() {
+    typingPractice = new TypingPractice();
+});
+
+// 전역 함수들
+function startTyping() {
+    typingPractice.start();
+}
+
+function resetTyping() {
+    typingPractice.reset();
+    // 모달 닫기
+    const modal = bootstrap.Modal.getInstance(document.getElementById('resultModal'));
+    if (modal) {
+        modal.hide();
+    }
+}
+</script>
+{% endblock %}
