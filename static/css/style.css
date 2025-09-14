@@ -122,6 +122,36 @@ body {
     width: 100%;
     height: 30%;
     background: linear-gradient(180deg, #87CEEB 0%, #B0E0E6 100%);
+    transition: background 2s ease-in-out;
+}
+
+/* 날씨별 하늘 배경 */
+.sky-area.sunny {
+    background: linear-gradient(180deg, #87CEEB 0%, #B0E0E6 100%);
+}
+
+.sky-area.cloudy {
+    background: linear-gradient(180deg, #708090 0%, #A9A9A9 100%);
+}
+
+.sky-area.rainy {
+    background: linear-gradient(180deg, #2F4F4F 0%, #696969 100%);
+}
+
+.sky-area.snowy {
+    background: linear-gradient(180deg, #E6E6FA 0%, #D3D3D3 100%);
+}
+
+.sky-area.stormy {
+    background: linear-gradient(180deg, #1C1C1C 0%, #404040 100%);
+}
+
+.sky-area.sunset {
+    background: linear-gradient(180deg, #FFB347 0%, #FF7F50 50%, #FF6347 100%);
+}
+
+.sky-area.dawn {
+    background: linear-gradient(180deg, #FFE4E1 0%, #FFC0CB 50%, #DDA0DD 100%);
 }
 
 .clouds {
@@ -217,6 +247,106 @@ body {
 @keyframes cloudFloat {
     0% { transform: translateX(0); }
     100% { transform: translateX(calc(100vw + 120px)); }
+}
+
+/* 날씨 효과 애니메이션 */
+
+/* 비 효과 */
+.rain-drop {
+    position: absolute;
+    width: 2px;
+    height: 20px;
+    background: linear-gradient(180deg, transparent 0%, #4682B4 40%, #191970 100%);
+    border-radius: 0 0 2px 2px;
+    animation: rainFall linear infinite;
+    opacity: 0.7;
+}
+
+@keyframes rainFall {
+    0% {
+        transform: translateY(-100vh);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100vh);
+        opacity: 0;
+    }
+}
+
+/* 눈 효과 */
+.snow-flake {
+    position: absolute;
+    color: white;
+    user-select: none;
+    pointer-events: none;
+    animation: snowFall linear infinite;
+    font-size: 1rem;
+}
+
+@keyframes snowFall {
+    0% {
+        transform: translateY(-100vh) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/* 번개 효과 */
+.lightning {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.9);
+    opacity: 0;
+    pointer-events: none;
+    animation: lightning 0.2s ease-in-out;
+}
+
+@keyframes lightning {
+    0%, 100% { opacity: 0; }
+    50% { opacity: 1; }
+}
+
+/* 별 효과 (밤하늘용) */
+.star {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: white;
+    border-radius: 50%;
+    animation: twinkle 2s ease-in-out infinite alternate;
+}
+
+@keyframes twinkle {
+    0% { opacity: 0.3; transform: scale(1); }
+    100% { opacity: 1; transform: scale(1.5); }
+}
+
+/* 구름 날씨별 색상 변경 */
+.sky-area.cloudy .cloud,
+.sky-area.cloudy .cloud::before,
+.sky-area.cloudy .cloud::after {
+    background: #D3D3D3;
+    opacity: 0.9;
+}
+
+.sky-area.rainy .cloud,
+.sky-area.rainy .cloud::before,
+.sky-area.rainy .cloud::after {
+    background: #696969;
+    opacity: 1;
+}
+
+.sky-area.stormy .cloud,
+.sky-area.stormy .cloud::before,
+.sky-area.stormy .cloud::after {
+    background: #2F2F2F;
+    opacity: 1;
 }
 
 /* 단어 컨테이너 */
@@ -455,6 +585,22 @@ body {
     .stage-number {
         font-size: 1.3rem;
     }
+    
+    /* 모바일에서 날씨 효과 최적화 */
+    .rain-drop {
+        height: 15px;
+        animation-duration: 1s !important;
+    }
+    
+    .snow-flake {
+        font-size: 0.8rem !important;
+        animation-duration: 3s !important;
+    }
+    
+    .star {
+        width: 1px;
+        height: 1px;
+    }
 }
 
 @media (max-width: 576px) {
@@ -471,6 +617,21 @@ body {
     .typing-input {
         font-size: 1rem;
         padding: 10px 12px;
+    }
+    
+    /* 작은 화면에서 날씨 효과 더욱 최적화 */
+    .rain-drop {
+        height: 12px;
+        width: 1px;
+    }
+    
+    .snow-flake {
+        font-size: 0.6rem !important;
+    }
+    
+    /* 성능을 위해 일부 효과 개수 줄이기 */
+    .weather-effect {
+        opacity: 0.8;
     }
 }
 

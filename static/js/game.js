@@ -1,3 +1,261 @@
+// 날씨 시스템 클래스
+class WeatherSystem {
+    constructor(skyArea) {
+        this.skyArea = skyArea;
+        this.currentWeather = 'sunny';
+        this.weatherEffects = [];
+        this.weatherChangeInterval = null;
+        
+        this.weatherTypes = [
+            { name: 'sunny', probability: 25, duration: 30000 },
+            { name: 'cloudy', probability: 20, duration: 25000 },
+            { name: 'rainy', probability: 15, duration: 20000 },
+            { name: 'snowy', probability: 10, duration: 35000 },
+            { name: 'stormy', probability: 8, duration: 15000 },
+            { name: 'sunset', probability: 12, duration: 40000 },
+            { name: 'dawn', probability: 10, duration: 30000 }
+        ];
+    }
+    
+    start() {
+        this.changeWeather();
+        this.weatherChangeInterval = setInterval(() => {
+            this.changeWeather();
+        }, Math.random() * 20000 + 15000); // 15-35초마다 날씨 변경
+    }
+    
+    stop() {
+        if (this.weatherChangeInterval) {
+            clearInterval(this.weatherChangeInterval);
+        }
+        this.clearWeatherEffects();
+    }
+    
+    changeWeather() {
+        const randomNum = Math.random() * 100;
+        let cumulativeProbability = 0;
+        
+        for (const weather of this.weatherTypes) {
+            cumulativeProbability += weather.probability;
+            if (randomNum <= cumulativeProbability) {
+                if (weather.name !== this.currentWeather) {
+                    this.setWeather(weather.name);
+                }
+                break;
+            }
+        }
+    }
+    
+    setWeather(weatherType) {
+        // 이전 날씨 클래스 제거
+        this.skyArea.className = 'sky-area';
+        this.clearWeatherEffects();
+        
+        // 새로운 날씨 클래스 추가
+        this.skyArea.classList.add(weatherType);
+        this.currentWeather = weatherType;
+        
+        // 날씨별 효과 시작
+        switch (weatherType) {
+            case 'rainy':
+                this.createRainEffect();
+                break;
+            case 'snowy':
+                this.createSnowEffect();
+                break;
+            case 'stormy':
+                this.createStormEffect();
+                break;
+            case 'sunset':
+            case 'dawn':
+                this.createStarEffect();
+                break;
+        }
+        
+        // 날씨 변경 알림
+        this.showWeatherNotification(weatherType);
+    }
+    
+    createRainEffect() {
+        const rainContainer = document.createElement('div');
+        rainContainer.className = 'weather-effect rain-effect';
+        this.skyArea.appendChild(rainContainer);
+        
+        // 모바일에서는 비 개수 줄이기
+        const isMobile = window.innerWidth <= 768;
+        const rainCount = isMobile ? 25 : 50;
+        const rainInterval = isMobile ? 300 : 200;
+        
+        for (let i = 0; i < rainCount; i++) {
+            setTimeout(() => {
+                if (this.currentWeather === 'rainy') {
+                    this.createRainDrop(rainContainer);
+                }
+            }, i * 100);
+        }
+        
+        this.rainInterval = setInterval(() => {
+            if (this.currentWeather === 'rainy') {
+                this.createRainDrop(rainContainer);
+            }
+        }, rainInterval);
+        
+        this.weatherEffects.push(rainContainer);
+    }
+    
+    createRainDrop(container) {
+        const drop = document.createElement('div');
+        drop.className = 'rain-drop';
+        drop.style.left = Math.random() * 100 + '%';
+        drop.style.animationDuration = (Math.random() * 1 + 0.5) + 's';
+        container.appendChild(drop);
+        
+        setTimeout(() => {
+            if (drop.parentNode) {
+                drop.parentNode.removeChild(drop);
+            }
+        }, 2000);
+    }
+    
+    createSnowEffect() {
+        const snowContainer = document.createElement('div');
+        snowContainer.className = 'weather-effect snow-effect';
+        this.skyArea.appendChild(snowContainer);
+        
+        const snowFlakes = ['❄', '❅', '❆', '✻', '✼', '❇', '❈', '❉'];
+        
+        // 모바일에서는 눈 개수 줄이기
+        const isMobile = window.innerWidth <= 768;
+        const snowCount = isMobile ? 15 : 30;
+        const snowInterval = isMobile ? 800 : 500;
+        
+        for (let i = 0; i < snowCount; i++) {
+            setTimeout(() => {
+                if (this.currentWeather === 'snowy') {
+                    this.createSnowFlake(snowContainer, snowFlakes);
+                }
+            }, i * 200);
+        }
+        
+        this.snowInterval = setInterval(() => {
+            if (this.currentWeather === 'snowy') {
+                this.createSnowFlake(snowContainer, snowFlakes);
+            }
+        }, snowInterval);
+        
+        this.weatherEffects.push(snowContainer);
+    }
+    
+    createSnowFlake(container, flakes) {
+        const flake = document.createElement('div');
+        flake.className = 'snow-flake';
+        flake.textContent = flakes[Math.floor(Math.random() * flakes.length)];
+        flake.style.left = Math.random() * 100 + '%';
+        flake.style.animationDuration = (Math.random() * 3 + 2) + 's';
+        flake.style.fontSize = (Math.random() * 0.8 + 0.8) + 'rem';
+        container.appendChild(flake);
+        
+        setTimeout(() => {
+            if (flake.parentNode) {
+                flake.parentNode.removeChild(flake);
+            }
+        }, 5000);
+    }
+    
+    createStormEffect() {
+        this.createRainEffect(); // 비 효과도 함께
+        
+        // 번개 효과
+        this.lightningInterval = setInterval(() => {
+            if (this.currentWeather === 'stormy' && Math.random() < 0.3) {
+                this.createLightning();
+            }
+        }, 3000);
+    }
+    
+    createLightning() {
+        const lightning = document.createElement('div');
+        lightning.className = 'lightning';
+        this.skyArea.appendChild(lightning);
+        
+        setTimeout(() => {
+            if (lightning.parentNode) {
+                lightning.parentNode.removeChild(lightning);
+            }
+        }, 200);
+        
+        // 번개 사운드 효과 (선택사항)
+        if (window.soundManager) {
+            // window.soundManager.play('thunder');
+        }
+    }
+    
+    createStarEffect() {
+        const starContainer = document.createElement('div');
+        starContainer.className = 'weather-effect star-effect';
+        this.skyArea.appendChild(starContainer);
+        
+        // 모바일에서는 별 개수 줄이기
+        const isMobile = window.innerWidth <= 768;
+        const starCount = isMobile ? 10 : 20;
+        
+        for (let i = 0; i < starCount; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 80 + '%';
+            star.style.animationDelay = Math.random() * 2 + 's';
+            starContainer.appendChild(star);
+        }
+        
+        this.weatherEffects.push(starContainer);
+    }
+    
+    clearWeatherEffects() {
+        // 모든 날씨 효과 제거
+        this.weatherEffects.forEach(effect => {
+            if (effect.parentNode) {
+                effect.parentNode.removeChild(effect);
+            }
+        });
+        this.weatherEffects = [];
+        
+        // 인터벌 정리
+        if (this.rainInterval) {
+            clearInterval(this.rainInterval);
+            this.rainInterval = null;
+        }
+        if (this.snowInterval) {
+            clearInterval(this.snowInterval);
+            this.snowInterval = null;
+        }
+        if (this.lightningInterval) {
+            clearInterval(this.lightningInterval);
+            this.lightningInterval = null;
+        }
+    }
+    
+    showWeatherNotification(weatherType) {
+        const weatherNames = {
+            sunny: '☀️ 맑음',
+            cloudy: '☁️ 흐림',
+            rainy: '🌧️ 비',
+            snowy: '❄️ 눈',
+            stormy: '⛈️ 폭풍',
+            sunset: '🌅 석양',
+            dawn: '🌄 새벽'
+        };
+        
+        if (window.showNotification && weatherNames[weatherType]) {
+            showNotification(
+                `날씨가 ${weatherNames[weatherType]}로 바뀌었습니다!`, 
+                'info', 
+                2000
+            );
+        }
+    }
+}
+
 // 게임 클래스 정의
 class TypingGame {
     constructor(config) {
@@ -20,6 +278,9 @@ class TypingGame {
         this.wordsContainer = document.getElementById('wordsContainer');
         this.typingInput = document.getElementById('typingInput');
         this.pauseBtn = document.getElementById('pauseBtn');
+        
+        // 날씨 시스템 초기화
+        this.weatherSystem = new WeatherSystem(document.querySelector('.sky-area'));
         
         this.setupEventListeners();
         this.loadWords();
@@ -69,6 +330,9 @@ class TypingGame {
         this.isPaused = false;
         this.typingInput.focus();
         this.updateUI();
+        
+        // 날씨 시스템 시작
+        this.weatherSystem.start();
         
         // 첫 번째 단어 생성
         this.createWord();
@@ -277,11 +541,17 @@ class TypingGame {
             this.pauseBtn.classList.remove('btn-warning');
             this.pauseBtn.classList.add('btn-success');
             showNotification('게임이 일시정지되었습니다', 'info', 1000);
+            
+            // 날씨 시스템 일시정지
+            this.weatherSystem.stop();
         } else {
             this.pauseBtn.innerHTML = '<i class="fas fa-pause"></i> 일시정지';
             this.pauseBtn.classList.remove('btn-success');
             this.pauseBtn.classList.add('btn-warning');
             this.typingInput.focus();
+            
+            // 날씨 시스템 재시작
+            this.weatherSystem.start();
         }
     }
     
@@ -311,6 +581,9 @@ class TypingGame {
         this.isRunning = false;
         clearInterval(this.gameInterval);
         clearInterval(this.wordInterval);
+        
+        // 날씨 시스템 정지
+        this.weatherSystem.stop();
         
         const accuracy = this.totalChars > 0 ? (this.correctChars / this.totalChars * 100) : 100;
         
@@ -372,6 +645,9 @@ class TypingGame {
         this.isRunning = false;
         clearInterval(this.gameInterval);
         clearInterval(this.wordInterval);
+        
+        // 날씨 시스템 정지
+        this.weatherSystem.stop();
         
         const accuracy = this.totalChars > 0 ? (this.correctChars / this.totalChars * 100) : 100;
         
