@@ -1,0 +1,459 @@
+/* 기본 스타일 */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+}
+
+/* 네비게이션 */
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+/* 메인 페이지 */
+.hero-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+}
+
+.feature-item {
+    padding: 1.5rem;
+    border-radius: 10px;
+    transition: transform 0.3s ease;
+}
+
+.feature-item:hover {
+    transform: translateY(-5px);
+}
+
+/* 대시보드 */
+.stat-card {
+    background: #f8f9fa;
+    border-radius: 10px;
+    transition: transform 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+}
+
+.stage-card {
+    margin-bottom: 1rem;
+}
+
+.btn-stage {
+    height: 80px;
+    border-radius: 10px;
+    border: none;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-stage:hover:not(.disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.stage-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.stage-number {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.stage-label {
+    font-size: 0.8rem;
+    opacity: 0.9;
+}
+
+/* 게임 화면 */
+.game-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(180deg, #87CEEB 0%, #4682B4 50%, #191970 100%);
+    overflow: hidden;
+}
+
+.game-header {
+    position: relative;
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+}
+
+.game-stats .stat-item {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    backdrop-filter: blur(5px);
+}
+
+.game-area {
+    position: relative;
+    width: 100%;
+    height: calc(100vh - 140px);
+    overflow: hidden;
+}
+
+/* 하늘 영역 */
+.sky-area {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 30%;
+    background: linear-gradient(180deg, #87CEEB 0%, #B0E0E6 100%);
+}
+
+.clouds {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.cloud {
+    position: absolute;
+    background: white;
+    border-radius: 50px;
+    opacity: 0.8;
+    animation: cloudFloat 20s infinite linear;
+}
+
+.cloud::before,
+.cloud::after {
+    content: '';
+    position: absolute;
+    background: white;
+    border-radius: 50px;
+}
+
+.cloud-1 {
+    width: 80px;
+    height: 40px;
+    top: 20%;
+    left: -100px;
+    animation-duration: 25s;
+}
+
+.cloud-1::before {
+    width: 50px;
+    height: 40px;
+    top: -20px;
+    left: 10px;
+}
+
+.cloud-1::after {
+    width: 60px;
+    height: 30px;
+    top: -10px;
+    right: 10px;
+}
+
+.cloud-2 {
+    width: 100px;
+    height: 50px;
+    top: 50%;
+    left: -120px;
+    animation-duration: 30s;
+    animation-delay: -10s;
+}
+
+.cloud-2::before {
+    width: 60px;
+    height: 50px;
+    top: -25px;
+    left: 15px;
+}
+
+.cloud-2::after {
+    width: 70px;
+    height: 40px;
+    top: -15px;
+    right: 15px;
+}
+
+.cloud-3 {
+    width: 90px;
+    height: 45px;
+    top: 70%;
+    left: -110px;
+    animation-duration: 35s;
+    animation-delay: -20s;
+}
+
+.cloud-3::before {
+    width: 55px;
+    height: 45px;
+    top: -22px;
+    left: 12px;
+}
+
+.cloud-3::after {
+    width: 65px;
+    height: 35px;
+    top: -12px;
+    right: 12px;
+}
+
+@keyframes cloudFloat {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(calc(100vw + 120px)); }
+}
+
+/* 단어 컨테이너 */
+.words-container {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+/* 떨어지는 단어 */
+.falling-word {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.95);
+    color: #333;
+    padding: 10px 15px;
+    border-radius: 25px;
+    font-weight: bold;
+    font-size: 1.1rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    border: 2px solid #007bff;
+    white-space: nowrap;
+    animation: falling linear;
+    backdrop-filter: blur(5px);
+    z-index: 100;
+}
+
+.falling-word.typing {
+    background: rgba(255, 235, 59, 0.95);
+    border-color: #ffc107;
+    transform: scale(1.1);
+}
+
+.falling-word.completed {
+    background: rgba(76, 175, 80, 0.95);
+    border-color: #4caf50;
+    animation: wordComplete 0.5s ease-out forwards;
+}
+
+.falling-word.missed {
+    background: rgba(244, 67, 54, 0.95);
+    border-color: #f44336;
+    animation: wordMissed 0.5s ease-out forwards;
+}
+
+@keyframes falling {
+    0% { transform: translateY(-50px); }
+    100% { transform: translateY(calc(100vh - 100px)); }
+}
+
+@keyframes wordComplete {
+    0% { transform: scale(1.1); opacity: 1; }
+    100% { transform: scale(1.5); opacity: 0; }
+}
+
+@keyframes wordMissed {
+    0% { transform: scale(1); opacity: 1; }
+    100% { transform: scale(0.8); opacity: 0; }
+}
+
+/* 바다 영역 */
+.ocean-area {
+    position: absolute;
+    bottom: 60px;
+    width: 100%;
+    height: 20%;
+    background: linear-gradient(180deg, #4682B4 0%, #191970 100%);
+    overflow: hidden;
+}
+
+.waves {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.wave {
+    position: absolute;
+    top: 0;
+    width: 200%;
+    height: 100%;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" fill="%23ffffff" fill-opacity="0.3"/></svg>') repeat-x;
+    animation: wave-animation 10s infinite linear;
+}
+
+.wave-1 {
+    animation-duration: 8s;
+    opacity: 0.4;
+}
+
+.wave-2 {
+    animation-duration: 12s;
+    opacity: 0.3;
+    animation-delay: -2s;
+}
+
+.wave-3 {
+    animation-duration: 16s;
+    opacity: 0.2;
+    animation-delay: -4s;
+}
+
+@keyframes wave-animation {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
+
+/* 타이핑 입력 영역 */
+.typing-area {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    padding: 20px 0;
+    z-index: 1000;
+}
+
+.typing-input {
+    font-size: 1.3rem;
+    padding: 15px 20px;
+    border: 3px solid #007bff;
+    border-radius: 25px;
+    background: rgba(255, 255, 255, 0.95);
+    text-align: center;
+    backdrop-filter: blur(5px);
+}
+
+.typing-input:focus {
+    outline: none;
+    border-color: #0056b3;
+    box-shadow: 0 0 20px rgba(0, 123, 255, 0.5);
+}
+
+.input-feedback {
+    text-align: center;
+    margin-top: 10px;
+    font-weight: bold;
+    min-height: 20px;
+}
+
+.input-feedback.correct {
+    color: #28a745;
+}
+
+.input-feedback.incorrect {
+    color: #dc3545;
+}
+
+/* 모달 스타일 */
+.completion-stats .stat-box {
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 10px;
+    margin: 0.5rem 0;
+}
+
+.completion-stats h3 {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.completion-stats p {
+    margin: 0;
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .game-header .row > div {
+        margin-bottom: 0.5rem;
+    }
+    
+    .game-stats {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .game-stats .stat-item {
+        margin: 0.25rem;
+        font-size: 0.9rem;
+    }
+    
+    .falling-word {
+        font-size: 1rem;
+        padding: 8px 12px;
+    }
+    
+    .typing-input {
+        font-size: 1.1rem;
+        padding: 12px 15px;
+    }
+    
+    .btn-stage {
+        height: 70px;
+    }
+    
+    .stage-number {
+        font-size: 1.3rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .game-stats .stat-item {
+        font-size: 0.8rem;
+        padding: 0.3rem 0.8rem;
+    }
+    
+    .falling-word {
+        font-size: 0.9rem;
+        padding: 6px 10px;
+    }
+    
+    .typing-input {
+        font-size: 1rem;
+        padding: 10px 12px;
+    }
+}
+
+/* 애니메이션 효과 */
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.pulse {
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}

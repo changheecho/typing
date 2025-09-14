@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block title %}대시보드 - 타이핑 마스터{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-tachometer-alt me-2"></i>{{ user.username }}님의 대시보드
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="stat-card text-center p-3">
+                                <i class="fas fa-trophy text-warning fa-3x mb-2"></i>
+                                <h5>현재 단계</h5>
+                                <h2 class="text-primary">{{ user.current_stage }}</h2>
+                                <p class="text-muted">/ {{ max_stage }}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="stat-card text-center p-3">
+                                <i class="fas fa-percentage text-success fa-3x mb-2"></i>
+                                <h5>진행률</h5>
+                                <h2 class="text-success">{{ "%.1f"|format((user.current_stage - 1) / max_stage * 100) }}%</h2>
+                                <p class="text-muted">완료된 단계</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="stat-card text-center p-3">
+                                <i class="fas fa-calendar text-info fa-3x mb-2"></i>
+                                <h5>가입일</h5>
+                                <h6 class="text-info">{{ user.created_at.strftime('%Y-%m-%d') }}</h6>
+                                <p class="text-muted">함께한 지 {{ (now() - user.created_at).days }}일</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0"><i class="fas fa-gamepad me-2"></i>단계 선택</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for stage in range(1, max_stage + 1) %}
+                        <div class="col-lg-2 col-md-3 col-sm-4 col-6 mb-3">
+                            <div class="stage-card text-center">
+                                {% if stage <= user.current_stage %}
+                                    <a href="{{ url_for('game', stage=stage) }}" class="btn btn-stage {% if stage < user.current_stage %}btn-success{% else %}btn-primary{% endif %} w-100">
+                                        <div class="stage-content">
+                                            {% if stage < user.current_stage %}
+                                                <i class="fas fa-check-circle mb-1"></i>
+                                            {% elif stage == user.current_stage %}
+                                                <i class="fas fa-play-circle mb-1"></i>
+                                            {% endif %}
+                                            <div class="stage-number">{{ stage }}</div>
+                                            <small class="stage-label">
+                                                {% if stage < user.current_stage %}완료{% elif stage == user.current_stage %}플레이{% endif %}
+                                            </small>
+                                        </div>
+                                    </a>
+                                {% else %}
+                                    <div class="btn btn-stage btn-secondary w-100 disabled">
+                                        <div class="stage-content">
+                                            <i class="fas fa-lock mb-1"></i>
+                                            <div class="stage-number">{{ stage }}</div>
+                                            <small class="stage-label">잠김</small>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>게임 방법</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-gamepad text-primary me-2"></i>게임 규칙</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-arrow-right text-primary me-2"></i>하늘에서 떨어지는 단어를 정확히 타이핑하세요</li>
+                                <li><i class="fas fa-arrow-right text-primary me-2"></i>단어가 바다에 떨어지기 전에 입력해야 합니다</li>
+                                <li><i class="fas fa-arrow-right text-primary me-2"></i>모든 단어를 성공적으로 입력하면 다음 단계로 진행</li>
+                                <li><i class="fas fa-arrow-right text-primary me-2"></i>단계가 올라갈수록 속도가 빨라집니다</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-keyboard text-success me-2"></i>타이핑 팁</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-arrow-right text-success me-2"></i>정확성을 먼저, 속도는 나중에</li>
+                                <li><i class="fas fa-arrow-right text-success me-2"></i>손가락 위치를 올바르게 유지하세요</li>
+                                <li><i class="fas fa-arrow-right text-success me-2"></i>화면을 보며 타이핑하는 습관을 기르세요</li>
+                                <li><i class="fas fa-arrow-right text-success me-2"></i>꾸준한 연습이 실력 향상의 열쇠입니다</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
