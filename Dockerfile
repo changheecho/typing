@@ -32,7 +32,10 @@ ENV PYTHONPATH=/app
 
 # 애플리케이션 실행을 위한 스크립트 생성
 RUN echo '#!/bin/bash\n\
-python -c "from app import app, db; app.app_context().push(); db.create_all()"\n\
+set -e\n\
+echo "Starting Typing Master Application..."\n\
+echo "Data directory: /app/data"\n\
+ls -la /app/data/ || echo "Data directory not found, will be created"\n\
 python app.py' > start.sh && chmod +x start.sh
 
 # 헬스체크 추가

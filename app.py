@@ -11,10 +11,14 @@ app = Flask(__name__)
 import os
 
 # data 디렉토리 생성
-os.makedirs('data', exist_ok=True)
+data_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data')
+os.makedirs(data_dir, exist_ok=True)
 
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'your-secret-key-here')
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///data/typing_practice.db')
+
+# 절대 경로로 데이터베이스 URI 설정
+default_db_path = f"sqlite:///{os.path.join(data_dir, 'typing_practice.db')}"
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', default_db_path)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -236,13 +240,39 @@ def complete_stage():
     
     return jsonify({'success': True, 'next_stage': user.current_stage})
 
+def init_database():
+    """데이터베이스 초기화"""
+    try:
+        with app.app_context():
+            # 데이터베이스 파일 경로 확인
+            db_uri = app.config['SQLALCHEMY_DATABASE_URI']
+            if db_uri.startswith('sqlite:///'):
+                db_path = db_uri.replace('sqlite:///', '')
+                db_dir = os.path.dirname(db_path)
+                if db_dir and not os.path.exists(db_dir):
+                    os.makedirs(db_dir, exist_ok=True)
+                    print(f"Created database directory: {db_dir}")
+            
+            # 테이블 생성
+            db.create_all()
+            print("Database tables created successfully")
+            
+    except Exception as e:
+        print(f"Error initializing database: {e}")
+        print(f"Database URI: {app.config['SQLALCHEMY_DATABASE_URI']}")
+        raise
+
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
+    # 데이터베이스 초기화
+    init_database()
     
     # 도커 환경을 위한 설정
     host = os.environ.get('HOST', '0.0.0.0')
     port = int(os.environ.get('PORT', 5000))
     debug = os.environ.get('FLASK_DEBUG', 'False').lower() == 'true'
+    
+    print(f"Starting server on {host}:{port}")
+    print(f"Debug mode: {debug}")
+    print(f"Database: {app.config['SQLALCHEMY_DATABASE_URI']}")
     
     app.run(host=host, port=port, debug=debug)

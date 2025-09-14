@@ -10,7 +10,7 @@ services:
     environment:
       - FLASK_ENV=production
       - SECRET_KEY=your-production-secret-key-change-this
-      - DATABASE_URL=sqlite:///data/typing_practice.db
+      - DATABASE_URL=sqlite:////app/data/typing_practice.db
     volumes:
       - typing_data:/app/data
     restart: unless-stopped
