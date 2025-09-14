@@ -71,9 +71,6 @@ class WeatherSystem {
                 this.createStarEffect();
                 break;
         }
-        
-        // 날씨 변경 알림
-        this.showWeatherNotification(weatherType);
     }
     
     createRainEffect() {
@@ -235,25 +232,6 @@ class WeatherSystem {
         }
     }
     
-    showWeatherNotification(weatherType) {
-        const weatherNames = {
-            sunny: '☀️ 맑음',
-            cloudy: '☁️ 흐림',
-            rainy: '🌧️ 비',
-            snowy: '❄️ 눈',
-            stormy: '⛈️ 폭풍',
-            sunset: '🌅 석양',
-            dawn: '🌄 새벽'
-        };
-        
-        if (window.showNotification && weatherNames[weatherType]) {
-            showNotification(
-                `날씨가 ${weatherNames[weatherType]}로 바뀌었습니다!`, 
-                'info', 
-                2000
-            );
-        }
-    }
 }
 
 // 게임 클래스 정의
@@ -352,6 +330,11 @@ class TypingGame {
                 this.updateGame();
             }
         }, 50); // 20 FPS
+        
+        // 정기적인 정리 작업
+        this.cleanupInterval = setInterval(() => {
+            this.periodicCleanup();
+        }, 2000); // 2초마다
     }
     
     createWord() {
@@ -383,7 +366,7 @@ class TypingGame {
         
         // 애니메이션 완료 후 제거
         setTimeout(() => {
-            if (wordData.element.parentNode && !wordData.completed) {
+            if (!wordData.completed && !wordData.toRemove && wordData.element && wordData.element.parentNode) {
                 this.missWord(wordData);
             }
         }, fallingDuration);
@@ -392,17 +375,27 @@ class TypingGame {
     updateGame() {
         // 단어들의 위치 확인 및 바다 도달 체크
         this.activeWords.forEach((wordData, index) => {
-            const rect = wordData.element.getBoundingClientRect();
-            const gameRect = this.gameArea.getBoundingClientRect();
+            // 이미 제거된 단어는 건너뛰기
+            if (wordData.toRemove || wordData.completed || !wordData.element || !wordData.element.parentNode) {
+                return;
+            }
             
-            // 바다에 도달했는지 확인 (게임 영역의 80% 지점)
-            if (rect.top > gameRect.height * 0.8 && !wordData.completed) {
-                this.missWord(wordData);
+            try {
+                const rect = wordData.element.getBoundingClientRect();
+                const gameRect = this.gameArea.getBoundingClientRect();
+                
+                // 바다에 도달했는지 확인 (게임 영역의 80% 지점)
+                if (rect.top > gameRect.height * 0.8) {
+                    this.missWord(wordData);
+                }
+            } catch (error) {
+                // 요소가 이미 제거되었다면 마킹
+                wordData.toRemove = true;
             }
         });
         
-        // 완료된 단어들 제거
-        this.activeWords = this.activeWords.filter(word => !word.toRemove);
+        // 완료된 단어들 정리
+        this.cleanupCompletedWords();
         
         // 모든 단어를 처리했는지 확인
         if (this.totalWords >= 20 && this.activeWords.length === 0) {
@@ -496,13 +489,9 @@ class TypingGame {
         // 사운드 효과
         window.soundManager.play('correct');
         
-        // 단어 제거
-        setTimeout(() => {
-            if (wordData.element.parentNode) {
-                wordData.element.parentNode.removeChild(wordData.element);
-            }
-            wordData.toRemove = true;
-        }, 500);
+        // 즉시 단어 제거 마킹하고 DOM에서 안전하게 제거
+        wordData.toRemove = true;
+        this.removeWordElement(wordData);
         
         this.updateUI();
         this.updateInputFeedback('correct', `+${baseScore + bonus} 점!`);
@@ -521,16 +510,119 @@ class TypingGame {
             return;
         }
         
-        // 단어 제거
-        setTimeout(() => {
-            if (wordData.element.parentNode) {
-                wordData.element.parentNode.removeChild(wordData.element);
-            }
-            wordData.toRemove = true;
-        }, 500);
+        // 즉시 단어 제거 마킹하고 DOM에서 안전하게 제거
+        wordData.toRemove = true;
+        this.removeWordElement(wordData);
         
         this.updateUI();
         showNotification(`단어가 바다에 빠졌습니다! (${this.missedWords}/3)`, 'warning', 2000);
+    }
+    
+    removeWordElement(wordData) {
+        if (!wordData.element) return;
+        
+        try {
+            // 제거 클래스 추가
+            wordData.element.classList.add('removing');
+            // 애니메이션 중단 및 즉시 숨김
+            wordData.element.style.animation = 'none';
+            wordData.element.style.display = 'none';
+            wordData.element.style.visibility = 'hidden';
+            wordData.element.style.opacity = '0';
+            wordData.element.style.pointerEvents = 'none';
+            
+            // 즉시 DOM에서 제거
+            if (wordData.element.parentNode) {
+                wordData.element.parentNode.removeChild(wordData.element);
+            }
+            
+            // 요소 참조 정리
+            wordData.element = null;
+        } catch (error) {
+            console.error('단어 요소 제거 중 오류:', error);
+            // 오류가 있어도 참조는 정리
+            wordData.element = null;
+        }
+    }
+    
+    cleanupCompletedWords() {
+        // 완료된 단어들을 배열에서 안전하게 제거
+        this.activeWords = this.activeWords.filter(wordData => {
+            if (wordData.toRemove || wordData.completed) {
+                // DOM에서 요소가 아직 제거되지 않았다면 제거
+                if (wordData.element && wordData.element.parentNode) {
+                    try {
+                        wordData.element.style.animation = 'none';
+                        wordData.element.parentNode.removeChild(wordData.element);
+                    } catch (error) {
+                        console.error('단어 정리 중 오류:', error);
+                    }
+                }
+                return false; // 배열에서 제거
+            }
+            return true; // 배열에 유지
+        });
+    }
+    
+    cleanupAllWords() {
+        // 모든 활성 단어들을 강제로 제거
+        this.activeWords.forEach(wordData => {
+            if (wordData.element) {
+                try {
+                    wordData.element.classList.add('removing');
+                    wordData.element.style.animation = 'none';
+                    wordData.element.style.display = 'none';
+                    wordData.element.style.visibility = 'hidden';
+                    wordData.element.style.opacity = '0';
+                    
+                    if (wordData.element.parentNode) {
+                        wordData.element.parentNode.removeChild(wordData.element);
+                    }
+                } catch (error) {
+                    console.error('모든 단어 정리 중 오류:', error);
+                }
+                wordData.element = null;
+            }
+        });
+        
+        // 배열 완전 초기화
+        this.activeWords = [];
+        
+        // 혹시 남아있는 단어 요소들도 정리
+        const remainingWords = this.wordsContainer.querySelectorAll('.falling-word');
+        remainingWords.forEach(element => {
+            try {
+                element.classList.add('removing');
+                element.style.animation = 'none';
+                element.style.display = 'none';
+                element.style.visibility = 'hidden';
+                element.style.opacity = '0';
+                element.parentNode.removeChild(element);
+            } catch (error) {
+                console.error('잔여 단어 요소 제거 중 오류:', error);
+            }
+        });
+        
+        // wordsContainer 내용 완전히 비우기
+        this.wordsContainer.innerHTML = '';
+    }
+    
+    periodicCleanup() {
+        // 주기적으로 혹시 남아있는 요소들을 정리
+        const allWords = this.wordsContainer.querySelectorAll('.falling-word');
+        allWords.forEach(element => {
+            try {
+                // 데이터 배열에 없는 요소는 제거
+                const isInActiveArray = this.activeWords.some(wordData => wordData.element === element);
+                if (!isInActiveArray) {
+                    element.classList.add('removing');
+                    element.style.display = 'none';
+                    element.parentNode.removeChild(element);
+                }
+            } catch (error) {
+                // 조용히 무시
+            }
+        });
     }
     
     togglePause() {
@@ -581,139 +673,70 @@ class TypingGame {
         this.isRunning = false;
         clearInterval(this.gameInterval);
         clearInterval(this.wordInterval);
+        clearInterval(this.cleanupInterval);
         
         // 날씨 시스템 정지
         this.weatherSystem.stop();
+        
+        // 남은 모든 단어 정리
+        this.cleanupAllWords();
         
         const accuracy = this.totalChars > 0 ? (this.correctChars / this.totalChars * 100) : 100;
         
         // 완료 통계 표시
         document.getElementById('finalScore').textContent = this.score;
-        document.getElementById('finalAccuracy').textContent = accuracy.toFixed(1) + '%';
+        document.getElementById('finalAccuracy').textContent = accuracy.toFixed(1);
         document.getElementById('wordsCompleted').textContent = this.completedWords;
         
         // 서버에 결과 전송
         this.saveProgress();
         
-        // 완료 모달 표시 (modal-open 클래스 제거)
+        // 완료 모달을 직접 표시 (Bootstrap Modal 사용하지 않음)
         const modalElement = document.getElementById('gameCompleteModal');
         
-        // 기존 모달 인스턴스 제거
-        const existingModal = bootstrap.Modal.getInstance(modalElement);
-        if (existingModal) {
-            existingModal.dispose();
+        if (modalElement) {
+            // 모달 클래스 추가로 표시
+            modalElement.classList.add('force-show');
+            
+            console.log('완료 모달이 표시되었습니다.');
+        } else {
+            console.error('완료 모달 요소를 찾을 수 없습니다.');
         }
-        
-        const modal = new bootstrap.Modal(modalElement, {
-            backdrop: 'static',
-            keyboard: false,
-            focus: true
-        });
-        
-        // 모달 표시
-        modal.show();
-        
-        // 모달이 완전히 표시된 후 버튼에 포커스 및 이벤트 리스너 추가
-        modalElement.addEventListener('shown.bs.modal', () => {
-            const nextBtn = document.getElementById('nextStageBtn');
-            const dashboardBtn = modalElement.querySelector('.btn-secondary');
-            
-            if (nextBtn) {
-                nextBtn.focus();
-                
-                // 강제로 이벤트 리스너 추가 (중복 방지)
-                nextBtn.removeEventListener('click', this.handleNextStage);
-                nextBtn.addEventListener('click', this.handleNextStage);
-            }
-            
-            if (dashboardBtn) {
-                dashboardBtn.removeEventListener('click', this.handleDashboard);
-                dashboardBtn.addEventListener('click', this.handleDashboard);
-            }
-            
-            console.log('모달이 표시되었고 버튼 이벤트가 설정되었습니다.');
-        }, { once: true });
         
         // 진행상황 추적
         trackUserProgress(this.config.stage, this.score, accuracy);
     }
     
-    // 버튼 클릭 핸들러 메서드들
-    handleNextStage = (e) => {
-        e.preventDefault();
-        console.log('다음 단계 버튼 클릭됨 (핸들러)');
-        const currentStage = this.config.stage;
-        const nextStage = currentStage + 1;
-        console.log('현재 단계:', currentStage, '다음 단계:', nextStage);
-        
-        if (nextStage <= 20) {
-            window.location.href = `/game/${nextStage}`;
-        } else {
-            window.location.href = '/dashboard';
-        }
-    }
-    
-    handleDashboard = (e) => {
-        e.preventDefault();
-        console.log('대시보드 버튼 클릭됨 (핸들러)');
-        window.location.href = '/dashboard';
-    }
-    
-    handleRestart = (e) => {
-        e.preventDefault();
-        console.log('재시작 버튼 클릭됨 (핸들러)');
-        location.reload();
-    }
     
     gameOver() {
         this.isRunning = false;
         clearInterval(this.gameInterval);
         clearInterval(this.wordInterval);
+        clearInterval(this.cleanupInterval);
         
         // 날씨 시스템 정지
         this.weatherSystem.stop();
+        
+        // 남은 모든 단어 정리
+        this.cleanupAllWords();
         
         const accuracy = this.totalChars > 0 ? (this.correctChars / this.totalChars * 100) : 100;
         
         // 게임 오버 통계 표시
         document.getElementById('gameOverScore').textContent = this.score;
-        document.getElementById('gameOverAccuracy').textContent = accuracy.toFixed(1) + '%';
+        document.getElementById('gameOverAccuracy').textContent = accuracy.toFixed(1);
         
-        // 게임 오버 모달 표시 (modal-open 클래스 제거)
+        // 게임 오버 모달을 직접 표시 (Bootstrap Modal 사용하지 않음)
         const modalElement = document.getElementById('gameOverModal');
         
-        // 기존 모달 인스턴스 제거
-        const existingModal = bootstrap.Modal.getInstance(modalElement);
-        if (existingModal) {
-            existingModal.dispose();
+        if (modalElement) {
+            // 모달 클래스 추가로 표시
+            modalElement.classList.add('force-show');
+            
+            console.log('게임 오버 모달이 표시되었습니다.');
+        } else {
+            console.error('게임 오버 모달 요소를 찾을 수 없습니다.');
         }
-        
-        const modal = new bootstrap.Modal(modalElement, {
-            backdrop: 'static',
-            keyboard: false,
-            focus: true
-        });
-        
-        // 모달 표시
-        modal.show();
-        
-        // 모달이 완전히 표시된 후 버튼 이벤트 설정
-        modalElement.addEventListener('shown.bs.modal', () => {
-            const dashboardBtn = modalElement.querySelector('.btn-secondary');
-            const restartBtn = modalElement.querySelector('.btn-primary');
-            
-            if (dashboardBtn) {
-                dashboardBtn.removeEventListener('click', this.handleDashboard);
-                dashboardBtn.addEventListener('click', this.handleDashboard);
-            }
-            
-            if (restartBtn) {
-                restartBtn.removeEventListener('click', this.handleRestart);
-                restartBtn.addEventListener('click', this.handleRestart);
-            }
-            
-            console.log('게임 오버 모달이 표시되었고 버튼 이벤트가 설정되었습니다.');
-        }, { once: true });
     }
     
     async saveProgress() {

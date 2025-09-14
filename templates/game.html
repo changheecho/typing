@@ -36,6 +36,8 @@
                     <button id="pauseBtn" class="btn btn-warning">
                         <i class="fas fa-pause"></i> 일시정지
                     </button>
+                    <button onclick="testGameCompleteModal()" class="btn btn-success btn-sm ms-1">완료테스트</button>
+                    <button onclick="testGameOverModal()" class="btn btn-danger btn-sm ms-1">오버테스트</button>
                 </div>
             </div>
         </div>
@@ -80,72 +82,77 @@
         </div>
     </div>
 
-    <!-- 게임 완료 모달 -->
-    <div class="modal fade" id="gameCompleteModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header bg-success text-white">
-                    <h5 class="modal-title">
-                        <i class="fas fa-trophy me-2"></i>단계 완료!
-                    </h5>
-                </div>
-                <div class="modal-body text-center">
-                    <div class="completion-stats">
-                        <div class="row">
-                            <div class="col-4">
-                                <div class="stat-box">
-                                    <h3 id="finalScore" class="text-primary">0</h3>
-                                    <p>최종 점수</p>
-                                </div>
+</div>
+
+<!-- 모달들을 게임 컨테이너 밖으로 이동 -->
+<!-- 게임 완료 모달 -->
+<div class="modal" id="gameCompleteModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-trophy me-2"></i>단계 완료!
+                </h5>
+            </div>
+            <div class="modal-body text-center">
+                <div class="completion-stats">
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="stat-box">
+                                <h3 id="finalScore" class="text-primary">0</h3>
+                                <p>최종 점수</p>
                             </div>
-                            <div class="col-4">
-                                <div class="stat-box">
-                                    <h3 id="finalAccuracy" class="text-success">0%</h3>
-                                    <p>정확도</p>
-                                </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="stat-box">
+                                <h3 id="finalAccuracy" class="text-success">0%</h3>
+                                <p>정확도</p>
                             </div>
-                            <div class="col-4">
-                                <div class="stat-box">
-                                    <h3 id="wordsCompleted" class="text-info">0</h3>
-                                    <p>완료 단어</p>
-                                </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="stat-box">
+                                <h3 id="wordsCompleted" class="text-info">0</h3>
+                                <p>완료 단어</p>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" onclick="goToDashboard()">대시보드로</button>
-                    <button type="button" class="btn btn-primary" onclick="goToNextStage()" id="nextStageBtn">다음 단계</button>
-                </div>
             </div>
-        </div>
-    </div>
-
-    <!-- 게임 오버 모달 -->
-    <div class="modal fade" id="gameOverModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header bg-danger text-white">
-                    <h5 class="modal-title">
-                        <i class="fas fa-times-circle me-2"></i>게임 오버
-                    </h5>
-                </div>
-                <div class="modal-body text-center">
-                    <p>단어가 바다에 떨어졌습니다. 다시 도전해보세요!</p>
-                    <div class="mt-3">
-                        <h5>최종 결과</h5>
-                        <p>점수: <span id="gameOverScore">0</span></p>
-                        <p>정확도: <span id="gameOverAccuracy">0</span>%</p>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" onclick="goToDashboard()">대시보드로</button>
-                    <button type="button" class="btn btn-primary" onclick="restartGame()">다시 시도</button>
-                </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-warning btn-sm" onclick="alert('완료 모달 버튼 클릭 테스트 성공!');">테스트</button>
+                <button type="button" class="btn btn-secondary" onclick="return handleCompleteDashboard();">대시보드로</button>
+                <button type="button" class="btn btn-primary" onclick="return handleCompleteNextStage();" id="nextStageBtn">다음 단계</button>
             </div>
         </div>
     </div>
 </div>
+
+<!-- 게임 오버 모달 -->
+<div class="modal" id="gameOverModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-times-circle me-2"></i>게임 오버
+                </h5>
+            </div>
+            <div class="modal-body text-center">
+                <p>단어가 바다에 떨어졌습니다. 다시 도전해보세요!</p>
+                <div class="mt-3">
+                    <h5>최종 결과</h5>
+                    <p>점수: <span id="gameOverScore">0</span></p>
+                    <p>정확도: <span id="gameOverAccuracy">0%</span></p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-warning btn-sm" onclick="alert('버튼 클릭 테스트 성공!');">테스트</button>
+                <button type="button" class="btn btn-secondary" onclick="return handleGameOverDashboard();">대시보드로</button>
+                <button type="button" class="btn btn-primary" onclick="return handleGameOverRestart();">다시 시도</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
 
 {% block scripts %}
@@ -191,6 +198,155 @@
     function testButtonClick() {
         console.log('버튼 클릭 테스트');
         alert('버튼이 정상적으로 클릭되었습니다!');
+    }
+    
+    // 모달 테스트 함수들
+    function testGameCompleteModal() {
+        console.log('게임 완료 모달 테스트 시작');
+        const modalElement = document.getElementById('gameCompleteModal');
+        console.log('모달 요소:', modalElement);
+        
+        if (modalElement) {
+            console.log('모달 요소 발견, 클래스 추가 전:', modalElement.className);
+            console.log('모달 스타일 상태:', {
+                display: modalElement.style.display,
+                visibility: modalElement.style.visibility,
+                position: modalElement.style.position
+            });
+            
+            modalElement.classList.add('force-show');
+            console.log('show-modal 클래스 추가 후:', modalElement.className);
+            
+            // 강제로 스타일 적용
+            modalElement.style.display = 'flex';
+            modalElement.style.position = 'fixed';
+            modalElement.style.top = '0';
+            modalElement.style.left = '0';
+            modalElement.style.width = '100vw';
+            modalElement.style.height = '100vh';
+            modalElement.style.backgroundColor = 'rgba(0,0,0,0.8)';
+            modalElement.style.zIndex = '99999';
+            modalElement.style.alignItems = 'center';
+            modalElement.style.justifyContent = 'center';
+            
+            console.log('인라인 스타일 적용 후:', modalElement.style.cssText);
+            console.log('계산된 스타일:', window.getComputedStyle(modalElement).display);
+            
+        } else {
+            console.error('게임 완료 모달 요소를 찾을 수 없습니다');
+        }
+    }
+    
+    function testGameOverModal() {
+        console.log('게임 오버 모달 테스트 시작');
+        const modalElement = document.getElementById('gameOverModal');
+        console.log('모달 요소:', modalElement);
+        
+        if (modalElement) {
+            console.log('모달 요소 발견, 클래스 추가 전:', modalElement.className);
+            console.log('모달 현재 위치:', modalElement.getBoundingClientRect());
+            console.log('모달 부모 요소:', modalElement.parentElement);
+            
+            modalElement.classList.add('force-show');
+            console.log('show-modal 클래스 추가 후:', modalElement.className);
+            
+            // 강제로 스타일 적용
+            modalElement.style.display = 'flex';
+            modalElement.style.position = 'fixed';
+            modalElement.style.top = '0';
+            modalElement.style.left = '0';
+            modalElement.style.width = '100vw';
+            modalElement.style.height = '100vh';
+            modalElement.style.backgroundColor = 'rgba(0,0,0,0.8)';
+            modalElement.style.zIndex = '99999';
+            modalElement.style.alignItems = 'center';
+            modalElement.style.justifyContent = 'center';
+            modalElement.style.visibility = 'visible';
+            modalElement.style.opacity = '1';
+            
+            console.log('인라인 스타일 적용 후:', modalElement.style.cssText);
+            console.log('계산된 스타일 display:', window.getComputedStyle(modalElement).display);
+            console.log('계산된 스타일 position:', window.getComputedStyle(modalElement).position);
+            console.log('계산된 스타일 zIndex:', window.getComputedStyle(modalElement).zIndex);
+            console.log('계산된 스타일 visibility:', window.getComputedStyle(modalElement).visibility);
+            
+            // 모달 다이얼로그도 확인
+            const modalDialog = modalElement.querySelector('.modal-dialog');
+            if (modalDialog) {
+                console.log('모달 다이얼로그 발견:', modalDialog);
+                console.log('모달 다이얼로그 위치:', modalDialog.getBoundingClientRect());
+                modalDialog.style.display = 'block';
+                modalDialog.style.margin = 'auto';
+            }
+            
+        } else {
+            console.error('게임 오버 모달 요소를 찾을 수 없습니다');
+        }
+    }
+    
+    // 모달 닫기 함수
+    function closeModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.classList.remove('force-show');
+        }
+    }
+    
+    // 전역 모달 버튼 핸들러 함수들 (더 단순화)
+    function handleCompleteDashboard() {
+        console.log('완료 모달: 대시보드 버튼 클릭됨');
+        closeModal('gameCompleteModal');
+        try {
+            window.location.href = '{{ url_for("dashboard") }}';
+        } catch (e) {
+            console.error('대시보드 이동 오류:', e);
+            window.location.href = '/dashboard';
+        }
+        return false;
+    }
+    
+    function handleCompleteNextStage() {
+        console.log('완료 모달: 다음 단계 버튼 클릭됨');
+        closeModal('gameCompleteModal');
+        const currentStage = {{ stage }};
+        const nextStage = currentStage + 1;
+        console.log('현재 단계:', currentStage, '다음 단계:', nextStage);
+        
+        try {
+            if (nextStage <= 20) {
+                window.location.href = `/game/${nextStage}`;
+            } else {
+                window.location.href = '{{ url_for("dashboard") }}';
+            }
+        } catch (e) {
+            console.error('페이지 이동 오류:', e);
+            window.location.reload();
+        }
+        return false;
+    }
+    
+    function handleGameOverDashboard() {
+        console.log('게임 오버 모달: 대시보드 버튼 클릭됨');
+        closeModal('gameOverModal');
+        try {
+            window.location.href = '{{ url_for("dashboard") }}';
+        } catch (e) {
+            console.error('대시보드 이동 오류:', e);
+            window.location.href = '/dashboard';
+        }
+        return false;
+    }
+    
+    function handleGameOverRestart() {
+        console.log('게임 오버 모달: 재시작 버튼 클릭됨');
+        closeModal('gameOverModal');
+        try {
+            location.reload();
+        } catch (e) {
+            console.error('재시작 오류:', e);
+            window.location.href = window.location.href;
+        }
+        return false;
     }
     
     // 페이지 로드 후 버튼 이벤트 확인
