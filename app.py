@@ -55,26 +55,41 @@ class GameSession(db.Model):
 
 # 단계별 게임 설정
 STAGE_CONFIG = {
-    1: {'speed': 3000, 'word_count': 1, 'word_type': 'single'},  # 3초마다 단어 하나
-    2: {'speed': 2800, 'word_count': 1, 'word_type': 'single'},
-    3: {'speed': 2600, 'word_count': 1, 'word_type': 'single'},
-    4: {'speed': 2400, 'word_count': 1, 'word_type': 'single'},
-    5: {'speed': 2200, 'word_count': 2, 'word_type': 'single'},  # 두 개씩
-    6: {'speed': 2000, 'word_count': 2, 'word_type': 'single'},
-    7: {'speed': 1800, 'word_count': 2, 'word_type': 'single'},
-    8: {'speed': 1600, 'word_count': 2, 'word_type': 'short'},   # 짧은 문장
-    9: {'speed': 1500, 'word_count': 2, 'word_type': 'short'},
-    10: {'speed': 1400, 'word_count': 3, 'word_type': 'short'},
-    11: {'speed': 1300, 'word_count': 3, 'word_type': 'short'},
-    12: {'speed': 1200, 'word_count': 3, 'word_type': 'medium'},  # 중간 문장
-    13: {'speed': 1100, 'word_count': 3, 'word_type': 'medium'},
-    14: {'speed': 1000, 'word_count': 4, 'word_type': 'medium'},
-    15: {'speed': 900, 'word_count': 4, 'word_type': 'medium'},
-    16: {'speed': 800, 'word_count': 4, 'word_type': 'long'},    # 긴 문장
-    17: {'speed': 700, 'word_count': 5, 'word_type': 'long'},
-    18: {'speed': 600, 'word_count': 5, 'word_type': 'long'},
-    19: {'speed': 500, 'word_count': 6, 'word_type': 'complex'},  # 복잡한 문장
-    20: {'speed': 400, 'word_count': 6, 'word_type': 'complex'},
+    # 초보 단계 (2배로 확장, 더 느린 속도)
+    1: {'speed': 5000, 'word_count': 1, 'word_type': 'single'},  # 5초마다 단어 하나 (매우 느림)
+    2: {'speed': 4500, 'word_count': 1, 'word_type': 'single'},  # 4.5초마다
+    3: {'speed': 4000, 'word_count': 1, 'word_type': 'single'},  # 4초마다
+    4: {'speed': 3500, 'word_count': 1, 'word_type': 'single'},  # 3.5초마다
+    5: {'speed': 3000, 'word_count': 1, 'word_type': 'single'},  # 3초마다
+    6: {'speed': 2800, 'word_count': 1, 'word_type': 'single'},  # 2.8초마다
+    7: {'speed': 2600, 'word_count': 1, 'word_type': 'single'},  # 2.6초마다
+    8: {'speed': 2400, 'word_count': 1, 'word_type': 'single'},  # 2.4초마다
+    
+    # 초중급 단계
+    9: {'speed': 2200, 'word_count': 2, 'word_type': 'single'},  # 두 개씩 시작
+    10: {'speed': 2000, 'word_count': 2, 'word_type': 'single'},
+    11: {'speed': 1800, 'word_count': 2, 'word_type': 'single'},
+    
+    # 중급 단계 (짧은 문장)
+    12: {'speed': 1600, 'word_count': 2, 'word_type': 'short'},   # 짧은 문장 시작
+    13: {'speed': 1500, 'word_count': 2, 'word_type': 'short'},
+    14: {'speed': 1400, 'word_count': 3, 'word_type': 'short'},
+    15: {'speed': 1300, 'word_count': 3, 'word_type': 'short'},
+    
+    # 중고급 단계 (중간 문장)
+    16: {'speed': 1200, 'word_count': 3, 'word_type': 'medium'},  # 중간 문장 시작
+    17: {'speed': 1100, 'word_count': 3, 'word_type': 'medium'},
+    18: {'speed': 1000, 'word_count': 4, 'word_type': 'medium'},
+    19: {'speed': 900, 'word_count': 4, 'word_type': 'medium'},
+    
+    # 고급 단계 (긴 문장)
+    20: {'speed': 800, 'word_count': 4, 'word_type': 'long'},    # 긴 문장 시작
+    21: {'speed': 700, 'word_count': 5, 'word_type': 'long'},
+    22: {'speed': 600, 'word_count': 5, 'word_type': 'long'},
+    
+    # 최고급 단계 (복잡한 문장)
+    23: {'speed': 500, 'word_count': 6, 'word_type': 'complex'},  # 복잡한 문장 시작
+    24: {'speed': 400, 'word_count': 6, 'word_type': 'complex'},
 }
 
 # 단어/문장 데이터
@@ -99,7 +114,45 @@ WORDS_DATA = {
         'happiness', 'incredible', 'joyful', 'kindness', 'laughter', 'magnificent', 'nature',
         'optimistic', 'peaceful', 'quality', 'relaxing', 'sunshine', 'tremendous', 'unique',
         'victory', 'wonderful', 'excellent', 'youth', 'zealous', 'adventure', 'brilliant',
-        'courage', 'dream', 'energy', 'freedom', 'growth', 'harmony', 'inspire', 'journey'
+        'courage', 'dream', 'energy', 'freedom', 'growth', 'harmony', 'inspire', 'journey',
+        
+        # 기본 동사들
+        'run', 'walk', 'talk', 'read', 'write', 'play', 'make', 'take', 'give', 'know',
+        'find', 'turn', 'move', 'live', 'show', 'hear', 'look', 'ask', 'try', 'need',
+        'feel', 'become', 'leave', 'bring', 'keep', 'start', 'stop', 'help', 'open', 'close',
+        'build', 'break', 'learn', 'teach', 'understand', 'remember', 'forget', 'choose', 'decide', 'change',
+        
+        # 일상 명사들
+        'house', 'car', 'book', 'computer', 'phone', 'table', 'chair', 'door', 'window', 'food',
+        'water', 'money', 'friend', 'family', 'school', 'office', 'city', 'country', 'world', 'earth',
+        'sun', 'moon', 'star', 'tree', 'flower', 'animal', 'dog', 'cat', 'bird', 'fish',
+        'music', 'movie', 'game', 'sport', 'color', 'number', 'letter', 'word', 'story', 'picture',
+        
+        # 형용사들
+        'big', 'small', 'long', 'short', 'high', 'low', 'fast', 'slow', 'hot', 'cold',
+        'warm', 'cool', 'bright', 'dark', 'light', 'heavy', 'easy', 'hard', 'soft', 'rough',
+        'smooth', 'clean', 'dirty', 'fresh', 'old', 'young', 'strong', 'weak', 'rich', 'poor',
+        'happy', 'sad', 'angry', 'calm', 'busy', 'free', 'safe', 'dangerous', 'healthy', 'sick',
+        
+        # 기술 관련 단어들
+        'internet', 'website', 'email', 'software', 'hardware', 'digital', 'online', 'data', 'file', 'folder',
+        'program', 'system', 'network', 'server', 'database', 'password', 'username', 'download', 'upload', 'backup',
+        'keyboard', 'mouse', 'screen', 'monitor', 'printer', 'scanner', 'camera', 'video', 'audio', 'image',
+        
+        # 학습 관련 단어들
+        'student', 'teacher', 'lesson', 'homework', 'test', 'exam', 'grade', 'class', 'subject', 'course',
+        'university', 'college', 'degree', 'certificate', 'skill', 'knowledge', 'education', 'training', 'practice', 'study',
+        'research', 'project', 'assignment', 'presentation', 'report', 'paper', 'article', 'journal', 'library', 'textbook',
+        
+        # 감정 및 상태 단어들
+        'love', 'hope', 'fear', 'joy', 'peace', 'stress', 'worry', 'confidence', 'pride', 'shame',
+        'surprise', 'excitement', 'boredom', 'interest', 'curiosity', 'patience', 'gratitude', 'respect', 'trust', 'faith',
+        'memory', 'thought', 'idea', 'opinion', 'belief', 'value', 'goal', 'plan', 'purpose', 'meaning',
+        
+        # 액션 및 활동 단어들
+        'exercise', 'cooking', 'shopping', 'travel', 'vacation', 'holiday', 'party', 'meeting', 'conference', 'interview',
+        'conversation', 'discussion', 'argument', 'agreement', 'decision', 'choice', 'option', 'solution', 'problem', 'question',
+        'answer', 'result', 'effect', 'cause', 'reason', 'explanation', 'example', 'experience', 'opportunity', 'challenge'
     ],
     'short': [
         # 기본 짧은 구문들
@@ -261,7 +314,7 @@ def dashboard():
         return redirect(url_for('login'))
     
     user = User.query.get(session['user_id'])
-    return render_template('dashboard.html', user=user, max_stage=20)
+    return render_template('dashboard.html', user=user, max_stage=24)
 
 @app.route('/game/<int:stage>')
 def game(stage):

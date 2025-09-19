@@ -178,7 +178,7 @@
         const currentStage = {{ stage }};
         const nextStage = currentStage + 1;
         console.log('현재 단계:', currentStage, '다음 단계:', nextStage);
-        if (nextStage <= 20) {
+        if (nextStage <= 24) {
             window.location.href = `/game/${nextStage}`;
         } else {
             window.location.href = '{{ url_for("dashboard") }}';
@@ -220,7 +220,7 @@
         console.log('현재 단계:', currentStage, '다음 단계:', nextStage);
         
         try {
-            if (nextStage <= 20) {
+            if (nextStage <= 24) {
                 window.location.href = `/game/${nextStage}`;
             } else {
                 window.location.href = '{{ url_for("dashboard") }}';
